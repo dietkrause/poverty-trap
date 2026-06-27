@@ -1,0 +1,3 @@
+# Runtime dependency. For development and visualization extras, install the
+# package with the optional groups instead:  pip install -e ".[dev,viz]"
+numpy>=1.24

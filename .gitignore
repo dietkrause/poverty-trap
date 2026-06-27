@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Tooling / editors
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Simulation outputs (generated, not versioned)
+outputs/
+*.png
+*.mp4
+!docs/**/*.png
+
+# Literature PDFs are NOT redistributed in this repo (copyright).
+# Use docs/literature/papers/fetch_papers.py to download them locally.
+docs/literature/papers/*.pdf
+docs/literature/papers/*.html
+
+# Full-text Markdown conversions of copyrighted papers are personal-study only
+# and must not be published. Only commit full text for open (e.g. CC-BY) papers.
+docs/literature/papers/fulltext/
