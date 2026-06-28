@@ -32,11 +32,12 @@ class OpportunityProcess:
         p = ctx.params
         rng = ctx.rng
 
-        # --- Arrival: Bernoulli approximation of a Poisson over this step. ---
-        # Zone opportunity density: rich zone is denser. Connectedness adds more.
+        # --- Arrival: exact probability of >=1 Poisson event in this step. ---
+        # P(N>=1) = 1 - exp(-rate*dt); reduces to rate*dt for small dt but stays
+        # a valid probability for any rate (no overflow past 1).
         omega = np.where(state.zone == 0, 0.0, 1.0)
         rate = p.lambda0 * np.exp(p.g_zone * omega + p.g_conn * state.connectedness)
-        arrives = rng.random(state.n) < (rate * p.dt)
+        arrives = rng.random(state.n) < -np.expm1(-rate * p.dt)
         if not np.any(arrives):
             return
 

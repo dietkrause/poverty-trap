@@ -70,7 +70,11 @@ def main() -> int:
         try:
             md = _convert_one(pdf)
             dest.write_text(header + md, encoding="utf-8")
-            print(f"  ok: {dest.relative_to(here)} ({len(md) // 1024} KB)")
+            kb = len(md) // 1024
+            # A page of text is ~2-3 KB; a multi-page paper that lands under ~12 KB
+            # almost certainly has no text layer (a scanned image) and needs OCR.
+            warn = "  (LOW TEXT - likely scanned; run OCR, e.g. `ocrmypdf in.pdf out.pdf`)" if kb < 12 else ""
+            print(f"  ok: {dest.relative_to(here)} ({kb} KB){warn}")
             ok += 1
         except Exception as exc:  # noqa: BLE001
             print(f"  FAILED: {pdf.name} ({exc})")
