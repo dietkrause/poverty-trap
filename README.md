@@ -88,6 +88,22 @@ src/poverty_trap/
   one note per paper. (Paper PDFs are not redistributed here; a fetch/convert
   workflow downloads and converts them locally for study.)
 
+## Experiments
+
+The [`experiments/`](experiments/) folder is where the simulation **adjudicates**
+questions instead of where we assert answers. Each experiment is a self-contained
+subfolder that sweeps a variable, averages over seeds, and reports what the model
+produces. The first one,
+[`effort-marginal-impact/`](experiments/effort-marginal-impact/), measures
+whether effort (value creation) always raises the probability of escape, by how
+much, and how that impact varies with structural position - including a condition
+that removes the efficiency floor, so the "effort always helps" property is
+*measured*, not built in.
+
+```bash
+python experiments/effort-marginal-impact/run.py
+```
+
 ## Roadmap
 
 The model is built to grow one mechanism at a time. The next steps (each a

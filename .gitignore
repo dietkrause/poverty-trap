@@ -37,3 +37,6 @@ docs/literature/papers/*.html
 # Full-text Markdown conversions of copyrighted papers are personal-study only
 # and must not be published. Only commit full text for open (e.g. CC-BY) papers.
 docs/literature/papers/fulltext/
+
+# Experiment outputs are generated artifacts, not versioned.
+experiments/**/results/
