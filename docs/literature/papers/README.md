@@ -25,22 +25,41 @@ offline reading. They stay on your machine and are excluded from version control
 Only papers under a redistribution-permitting license (e.g. CC-BY) may be
 committed as full text, with attribution.
 
-| Note | Reference | Open version | Used for |
-|------|-----------|--------------|----------|
-| [chetty-2014.md](chetty-2014.md) | Chetty, Hendren, Kline & Saez (2014), QJE | NBER w19843 | neighbourhood / geography of mobility |
-| [barrett-carter-2006.md](barrett-carter-2006.md) | Barrett & Carter (2006), J. Dev. Studies | paywalled (DOI) | Micawber threshold / asset trap |
-| [azariadis-stachurski-2005.md](azariadis-stachurski-2005.md) | Azariadis & Stachurski (2005), Handbook of Econ. Growth | author working paper | S-shaped map / multiple equilibria |
-| [ghatak-2015.md](ghatak-2015.md) | Ghatak (2015), World Bank Econ. Review | LSE author PDF | poverty premium |
-| [mani-2013.md](mani-2013.md) | Mani, Mullainathan, Shafir & Zhao (2013), Science | author/HKS copy | effort efficiency / scarcity tax |
-| [corak-2013.md](corak-2013.md) | Corak (2013), J. Econ. Perspectives | IZA dp7520 | IGE / Great Gatsby Curve |
-| [oecd-2018.md](oecd-2018.md) | OECD (2018), A Broken Social Elevator? | OECD open | generations to mean income |
-| [chetty-2022-social-capital.md](chetty-2022-social-capital.md) | Chetty, Jackson et al. (2022), Nature | open access | social capital / connectedness |
-| [granovetter-1973.md](granovetter-1973.md) | Granovetter (1973), Am. J. Sociology | author/JSTOR | weak ties / opportunity access |
-| [barabasi-albert-1999.md](barabasi-albert-1999.md) | Barabasi & Albert (1999), Science | arXiv cond-mat/9910332 | preferential attachment / power law |
-| [merton-1968.md](merton-1968.md) | Merton (1968), Science | open scans | Matthew effect / cumulative advantage |
-| [pluchino-2018.md](pluchino-2018.md) | Pluchino, Biondo & Rapisarda (2018), Adv. Complex Syst. | arXiv 1802.07068 | talent normal, outcome power-law |
+The full evidence ledger - which paper backs which assumption, with the exact
+numbers - is in [`../calibration.md`](../calibration.md). The table below lists
+the papers whose **free PDF downloads and converts cleanly** (the set this repo
+targets for offline / AI-assisted reading).
 
-> Some sources are paywalled at the publisher. The notes always link the
-> official DOI plus the best freely available alternative. Please respect the
-> licenses of the downloaded files; they are for personal study and are not
-> redistributed by this repository.
+| File stem (in `fulltext/`) | Reference | Backs |
+|----------------------------|-----------|-------|
+| balboni-2022-why-stay-poor | Balboni et al. (2022), QJE | the threshold w* (~504 USD PPP) |
+| banerjee-2015-six-countries | Banerjee et al. (2015), Science | big-push escape (graduation RCT) |
+| lybbert-2004-stochastic-wealth | Lybbert et al. (2004), EJ | livestock Micawber threshold |
+| santos-barrett-2018-heterogeneous-dynamics | Santos & Barrett (2018), NBER | shock-dependent threshold |
+| chetty-2014-land-of-opportunity | Chetty et al. (2014), QJE | rank-rank slope 0.341 |
+| chetty-hendren-2018-neighborhoods-1/2 | Chetty & Hendren (2018), QJE | ~4%/yr exposure effect |
+| chetty-2018-opportunity-atlas | Chetty et al. (2018), NBER | 60% causal place effects |
+| bergman-2024-moves-to-opportunity | Bergman et al. (2024), AER | relocation friction (+37.8 pp) |
+| chetty-2022-social-capital-1/2 | Chetty, Jackson et al. (2022), Nature | connectedness -> +20% income |
+| ghatak-2015-poverty-traps | Ghatak (2015), WBER | poverty-premium theory |
+| davies-2016-paying-to-be-poor | Davies et al. (2016), PFRC | premium ~GBP 490/yr |
+| davies-evans-2023-poverty-premium | Davies & Evans (2023), PFRC | premium incidence/tail |
+| mani-2013-poverty-cognitive | Mani et al. (2013), Science | scarcity tax ~13 IQ pts |
+| haushofer-fehr-2014-psychology-poverty | Haushofer & Fehr (2014), Science | stress/scarcity feedback |
+| fagereng-2020-returns-to-wealth | Fagereng et al. (2020), Econometrica | returns rise +180 bps with wealth |
+| benhabib-bisin-2018-skewed-wealth | Benhabib & Bisin (2018), JEL | Kesten tail, exponent ~1.5 |
+| gabaix-2016-dynamics-of-inequality | Gabaix et al. (2016), Econometrica | zeta~1.54, slow transitions |
+| dynan-2004-do-rich-save-more | Dynan et al. (2004), JPE | saving rate -2.7% -> 16.1% |
+| psacharopoulos-2018-returns-education | Psacharopoulos & Patrinos (2018), WB | ~9%/yr returns to schooling |
+| heckman-2006-earnings-functions | Heckman et al. (2006), NBER | Mincer earnings form |
+| corak-2013-great-gatsby | Corak (2013), JEP | IGE by country; Great Gatsby |
+| jantti-2006-american-exceptionalism | Jantti et al. (2006), IZA | father-son IGE by country |
+| mazumder-2015-ige-us | Mazumder (2015), Chicago Fed | US IGE upper bound > 0.6 |
+| barabasi-albert-1999-scaling | Barabasi & Albert (1999), Science | preferential attachment |
+| pluchino-2018-talent-vs-luck | Pluchino et al. (2018), ACS | talent normal -> outcome power-law |
+
+> A few sources have no clean free PDF and so are cited but not downloaded:
+> Kraay & McKenzie (2014, JEP, the skeptical counter-case), Bach, Calvet & Sodini
+> (2020, AER), Vermeulen (2018, RIW), Bell et al. (2019, QJE), Card (1999). See
+> `../calibration.md` for their numbers and links.
+
