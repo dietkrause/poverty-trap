@@ -29,6 +29,7 @@ from .population.lifecycle import (
     SkillGrowth,
 )
 from .population.network import NetworkDrift, PeerInfluence, SocialNetwork
+from .population.pooling import CollectivePooling
 from .population.regime import RegimePolicy
 
 
@@ -94,6 +95,7 @@ def build_simulation(
     population_processes = [SkillGrowth()]
     if with_network:
         population_processes.append(SocialNetwork())
+        population_processes.append(CollectivePooling())
     population_processes.append(RegimePolicy())
     population_processes.append(FirstPassageMonitor(births, lifespan_ticks=lifespan_ticks))
 

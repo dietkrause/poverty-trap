@@ -24,5 +24,8 @@ class CapitalReturns:
     def drift(self, state: AgentState, ctx: SimContext) -> np.ndarray:
         p = ctx.params
         s = savings_share(state, p)
-        # Returns only accrue on positive wealth.
-        return p.r * np.maximum(state.wealth, 0.0) * s
+        w = np.maximum(state.wealth, 0.0)
+        # Returns rise with wealth (Fagereng 2020): r(w) = r + slope * w/w*.
+        frac = np.clip(w / p.rich_threshold, 0.0, 1.0)
+        r_w = p.r + p.r_wealth_slope * frac
+        return r_w * w * s

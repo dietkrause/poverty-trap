@@ -89,8 +89,11 @@ class ModelParams:
     """Sensitivity of the savings share to skill."""
     h_bar: float = 0.50
     """Skill reference point for the savings-share logistic."""
-    r: float = 0.03
-    """Return on invested capital per period."""
+    r: float = 0.007
+    """Base return on invested capital (low-wealth) per period."""
+    r_wealth_slope: float = 0.020
+    """Extra return at the rich threshold: r(w) rises from r to r + slope across
+    the wealth range (Fagereng 2020: returns rise ~180 bps P10->P90)."""
 
     # --- Social network (section 7.6) ---------------------------------------
     beta_network: float = 0.010
@@ -103,6 +106,11 @@ class ModelParams:
     """Average number of ties per agent in the generated graph."""
     homophily: float = 0.85
     """Probability that a tie connects same-zone agents (segregation)."""
+    pool_size: int = 4
+    """Group size for collective pooling (cooperatives / family support)."""
+    pool_rate: float = 0.02
+    """Per-tick chance a poor agent attempts to pool resources with peers to
+    push one member across the threshold (set 0 to disable)."""
 
     # --- Opportunity process (marked Poisson / Pareto, section 7.5) ---------
     lambda0: float = 0.10
@@ -145,6 +153,9 @@ class ModelParams:
     redistribution: float = 0.0
     """Per-period tax rate on wealth above the rich threshold, redistributed as
     a uniform lift to below-line agents. ``0`` disables redistribution."""
+    relative_line_theta: float = 0.0
+    """If > 0, the effective poverty line rises with society:
+    ``w_p_eff = max(poverty_line, theta * median(wealth))``. ``0`` = absolute line."""
 
     def evolve(self, **changes: Any) -> "ModelParams":
         """Return a modified copy of these parameters.

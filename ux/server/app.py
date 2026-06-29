@@ -35,7 +35,12 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 def make_params(ctrl: dict) -> ModelParams:
     name = ctrl.get("regime", "baseline")
-    return PRESETS[name] if name in PRESETS else ModelParams()
+    base = PRESETS[name] if name in PRESETS else ModelParams()
+    # Allow the UI to override any configurable hyperparameter.
+    overrides = ctrl.get("params") or {}
+    valid = {f for f in ModelParams.__dataclass_fields__}
+    safe = {k: v for k, v in overrides.items() if k in valid}
+    return base.evolve(**safe) if safe else base
 
 
 def build(ctrl: dict):

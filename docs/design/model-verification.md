@@ -81,10 +81,11 @@ $$c_i = \frac{1}{|\mathcal N(i)|}\sum_{j\in\mathcal N(i)}\mathbf{1}[w_j>w_p]$$
 `homophily` within zone, `1-homophily` across) and computes connectedness as a
 single row-normalised matrix-vector product $c = W\,\mathbf{1}[w>w_p]$. **[exact]**
 
-**[deferred]** *Pooling* (a connected group jointly crossing $w^*$ when
-$\sum_{j\in C}w_j\ge w^*$) is described in the spec but not implemented. It would
-be a new `PopulationProcess`; it is intentionally left as a clearly-scoped
-extension rather than an untested addition.
+**[exact]** *Pooling*: `population/pooling.py::CollectivePooling` lets below-line
+agents combine resources (size `pool_size`, rate `pool_rate`) so a group whose
+summed wealth reaches `w*` pushes one member across, conserving total wealth.
+Peer interaction is `population/network.py::PeerInfluence`: drift
+`gamma_peer * tanh(neighbour_mean_wealth - w)` (social multiplier).
 
 ## 7. Talent -> power-law tail (spec 7.7)
 
@@ -117,10 +118,10 @@ documented, conservative refinement).
 - **Redistribution**: tax $t$ on wealth above $w^*$, redistributed equally to
   below-line agents. **[exact]**
 
-**[deferred]** The *relative poverty line* $w_p=\max(w_p^0,\theta\,\mathrm{median}(w))$
-is specified but not implemented; `poverty_line` is currently a static parameter
-used by the premium, the bands, and $\eta$. Making it dynamic is a scoped change
-(thread an effective line through those three call sites) left for a later pass.
+**[exact]** The *relative poverty line* `w_p_eff = max(w_p0, theta*median(w))` is
+implemented in `bands.effective_poverty_line` (active when `relative_line_theta>0`)
+and is used by the premium and the efficiency term so the "below the line" notion
+stays consistent; with `theta=0` it reduces to the static line.
 
 ## 10. Continuum bands and first-passage (spec 7.10)
 
@@ -147,8 +148,9 @@ Every stochastic draw flows through the single `numpy.random.Generator` in
 |------|--------|-----|
 | Opportunity arrival = one event/step | [approx] | exact $\Pr(N\ge1)$; multi-arrival negligible at small `dt` |
 | Generational base-blend term | refinement | prevents lineages collapsing to 0; conservative |
-| Pooling (7.6) | [deferred] | scoped extension, not yet implemented |
-| Relative poverty line (7.9) | [deferred] | scoped extension, not yet implemented |
-| Constant `r` vs data | spec-faithful | spec uses constant `r`; `calibration.md` section 6 proposes `r(w)` |
+| Peer interaction | [exact] | `PeerInfluence`: drift toward neighbours' mean wealth |
+| Pooling (7.6) | [exact] | `population/pooling.py::CollectivePooling` |
+| Relative poverty line (7.9) | [exact] | `bands.effective_poverty_line`, `relative_line_theta>0` |
+| Wealth-dependent returns | [exact] | `r(w)=r+slope*w/w*` (Fagereng), default on |
 
 Everything else is a literal, verifiable implementation of the equations.

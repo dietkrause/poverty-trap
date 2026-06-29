@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from ..core.bands import effective_poverty_line
 from ..core.config import ModelParams
 from ..core.context import SimContext
 from ..core.state import AgentState
@@ -26,9 +27,11 @@ def effort_efficiency(state: AgentState, p: ModelParams) -> np.ndarray:
     """``eta_i`` in ``[eta_min, 1]`` (section 7.2, the scarcity tax).
 
     Rises with slack above the poverty line and falls with the stressor load,
-    so the same effort buys less when you are poor or burdened.
+    so the same effort buys less when you are poor or burdened. Uses the
+    effective (possibly relative) poverty line.
     """
-    x = p.k_w * (state.wealth - p.poverty_line) - p.k_s * state.stressors
+    line = effective_poverty_line(state.wealth, p)
+    x = p.k_w * (state.wealth - line) - p.k_s * state.stressors
     return p.eta_min + (1.0 - p.eta_min) * _logistic(x)
 
 

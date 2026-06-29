@@ -9,6 +9,7 @@ from .lifecycle import (
     SkillGrowth,
 )
 from .network import NetworkDrift, PeerInfluence, SocialNetwork
+from .pooling import CollectivePooling
 from .regime import RegimePolicy
 
 __all__ = [
@@ -19,5 +20,6 @@ __all__ = [
     "SocialNetwork",
     "NetworkDrift",
     "PeerInfluence",
+    "CollectivePooling",
     "RegimePolicy",
 ]

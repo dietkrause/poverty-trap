@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from ..core.bands import effective_poverty_line
 from ..core.context import SimContext
 from ..core.state import AgentState
 
@@ -20,5 +21,6 @@ class PovertyPremium:
 
     def drift(self, state: AgentState, ctx: SimContext) -> np.ndarray:
         p = ctx.params
-        below = state.wealth < p.poverty_line
+        line = effective_poverty_line(state.wealth, p)
+        below = state.wealth < line
         return np.where(below, -p.premium, 0.0)

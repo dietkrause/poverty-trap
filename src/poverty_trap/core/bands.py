@@ -15,6 +15,19 @@ import numpy as np
 from .config import ModelParams
 
 
+def effective_poverty_line(wealth: np.ndarray, params: ModelParams) -> float:
+    """The poverty line for this population: absolute, or relative if configured.
+
+    With ``relative_line_theta > 0`` the line rises with the median (a relative
+    poverty concept), so escaping gets harder as society gets richer. Otherwise
+    the static ``poverty_line`` is returned. Used wherever "below the line"
+    matters (premium, efficiency, bands) so the notion stays consistent.
+    """
+    if params.relative_line_theta <= 0.0:
+        return params.poverty_line
+    return max(params.poverty_line, params.relative_line_theta * float(np.median(wealth)))
+
+
 class Band(IntEnum):
     """Ordered wealth bands used for reporting the continuum."""
 
