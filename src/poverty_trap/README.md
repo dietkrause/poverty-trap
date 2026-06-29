@@ -22,42 +22,46 @@ flows through one seeded generator, so runs are reproducible.
 ## 2. Module map
 
 ```mermaid
-graph TD
+graph LR
+  cli[cli.py] --> builder[builder.py] --> engine
   subgraph core
-    config[config.py: ModelParams]
-    state[state.py: AgentState]
-    ctx[context.py: SimContext]
-    proto[protocols.py: interfaces]
-    bands[bands.py: bands]
+    direction TB
     engine[engine.py: Simulation]
+    proto[protocols.py]
+    state[state.py]
+    ctx[context.py]
+    config[config.py]
+    bands[bands.py]
   end
   subgraph dynamics
-    nb[neighborhood] --> proto
-    pp[poverty_premium] --> proto
-    vc[value_creation: eta,q,s] --> proto
-    cap[capital_returns] --> proto
-    dif[diffusion] --> proto
-    eff[effort policies] --> proto
-  end
-  subgraph events
-    opp[opportunity] --> proto
+    direction TB
+    nb[neighborhood]
+    pp[poverty_premium]
+    vc[value_creation]
+    cap[capital_returns]
+    dif[diffusion]
+    eff[effort]
   end
   subgraph population
-    skill[skill_growth] --> proto
-    net[network + NetworkDrift] --> proto
-    reg[regime_policy] --> proto
-    life[lifecycle + births] --> proto
+    direction TB
+    skill[skill_growth]
+    net[network]
+    reg[regime_policy]
+    life[lifecycle]
   end
-  subgraph observe
-    met[metrics: Gini, bands] --> proto
+  subgraph evobs[events + observe]
+    direction TB
+    opp[opportunity]
+    met[metrics]
   end
-  regimes[regimes: presets] --> config
-  builder[builder.py] --> engine
-  cli[cli.py] --> builder
+  dynamics --> proto
+  population --> proto
+  evobs --> proto
   engine --> proto
   engine --> state
   engine --> ctx
   ctx --> config
+  regimes[regimes] --> config
 ```
 
 Every domain package (`dynamics`, `events`, `population`, `observe`) depends only
