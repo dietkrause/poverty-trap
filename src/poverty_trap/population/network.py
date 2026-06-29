@@ -54,6 +54,9 @@ class SocialNetwork:
         assert self._w is not None
         above = (state.wealth > ctx.params.poverty_line).astype(np.float64)
         state.connectedness = self._w @ above
+        # Local peer reference: the mean wealth of an agent's neighbours, used by
+        # the peer-influence drift term (knowledge / role-model / demand spillover).
+        state.peer_mean_wealth = self._w @ state.wealth
 
 
 class NetworkDrift:
@@ -63,3 +66,22 @@ class NetworkDrift:
 
     def drift(self, state: AgentState, ctx: SimContext) -> np.ndarray:
         return ctx.params.beta_network * state.connectedness
+
+
+class PeerInfluence:
+    """Drift term: value creation drifts toward neighbours' mean wealth.
+
+    Models genuine person-to-person interaction (Glaeser-Sacerdote-Scheinkman
+    social multiplier; Chetty social capital): being surrounded by wealthier
+    neighbours pulls you up (role models, knowledge spillovers, local demand),
+    while poorer surroundings drag you down. The ``tanh`` bounds each pull, and
+    with homophily (segregation) this reinforces both rich and poor clusters -
+    deepening the trap. Active only when a network is present.
+    """
+
+    name = "peer_influence"
+
+    def drift(self, state: AgentState, ctx: SimContext) -> np.ndarray:
+        if state.peer_mean_wealth is None:
+            return np.zeros(state.n)
+        return ctx.params.gamma_peer * np.tanh(state.peer_mean_wealth - state.wealth)

@@ -44,8 +44,9 @@ class AgentState:
     ever_left_poverty: np.ndarray # bool: this life has crossed the poverty line
     resolved: np.ndarray          # int8: 0 = striving, +1 = reached rich, -1 = ruined
 
-    # Per-tick scratch space (filled by the drift pipeline, read by observers)
+    # Per-tick scratch space (filled by the drift pipeline / network, read by observers)
     last_drift: np.ndarray = field(default=None)  # type: ignore[assignment]
+    peer_mean_wealth: np.ndarray = field(default=None)  # type: ignore[assignment]
 
     @classmethod
     def initialize(cls, params: ModelParams, rng: np.random.Generator) -> "AgentState":
@@ -83,6 +84,7 @@ class AgentState:
             ever_left_poverty=np.zeros(n, dtype=bool),
             resolved=np.zeros(n, dtype=np.int8),
             last_drift=np.zeros(n, dtype=np.float64),
+            peer_mean_wealth=wealth.copy(),
         )
 
     # --- Convenience masks (read-only views of the population) --------------

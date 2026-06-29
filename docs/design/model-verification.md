@@ -40,6 +40,7 @@ The engine sums these `DriftTerm` components (each returns a `(n,)` array):
 | $-\pi_{\text{pov}}(w_i) = -\pi_0\,\mathbf{1}[w_i<w_p]$ | `dynamics/poverty_premium.py` | [exact] |
 | $\alpha\,e_i\,\eta_i\,q_i$ | `dynamics/value_creation.py::ValueCreation` | [exact] |
 | $\beta_N\,c_i$ | `population/network.py::NetworkDrift` | [exact] |
+| peer spillover $\gamma\tanh(\bar w_{\mathcal N}-w_i)$ | `population/network.py::PeerInfluence` | [exact] |
 | $r\,w_i\,s_i$ | `dynamics/capital_returns.py` (uses $\max(w,0)$) | [exact] |
 
 ## 3. Effort efficiency, quality, savings (spec 7.2-7.3)

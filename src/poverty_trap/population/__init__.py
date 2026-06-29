@@ -8,7 +8,7 @@ from .lifecycle import (
     SimpleRestart,
     SkillGrowth,
 )
-from .network import NetworkDrift, SocialNetwork
+from .network import NetworkDrift, PeerInfluence, SocialNetwork
 from .regime import RegimePolicy
 
 __all__ = [
@@ -18,5 +18,6 @@ __all__ = [
     "SkillGrowth",
     "SocialNetwork",
     "NetworkDrift",
+    "PeerInfluence",
     "RegimePolicy",
 ]

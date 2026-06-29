@@ -28,7 +28,7 @@ from .population.lifecycle import (
     SimpleRestart,
     SkillGrowth,
 )
-from .population.network import NetworkDrift, SocialNetwork
+from .population.network import NetworkDrift, PeerInfluence, SocialNetwork
 from .population.regime import RegimePolicy
 
 
@@ -79,6 +79,7 @@ def build_simulation(
     drift_terms = [NeighborhoodDrift(), PovertyPremium(), ValueCreation(), CapitalReturns()]
     if with_network:
         drift_terms.append(NetworkDrift())
+        drift_terms.append(PeerInfluence())
     noise_terms = [DiffusionShocks()]
 
     # 4. Discrete events.

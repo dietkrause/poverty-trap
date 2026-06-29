@@ -137,6 +137,7 @@ framing.
 | Connectedness predicts mobility (calibrates `beta_network`) | **Chetty, Jackson et al. 2022 (Nature) I**: raising low-SES children's economic connectedness to the high-SES average -> **+20% adult income**; county slope ~**16.4 income-rank points per 1.0 EC**. | [backed] |
 | The disconnection is exposure + bias (calibrates `homophily`) | **Social Capital II**: SES disconnection ~**54% exposure** vs **46% friending bias**. | [backed] |
 | Opportunity/access is highly concentrated | **Bell et al. 2019 (QJE)**: top-1% children **10x** as likely to become inventors; equalising exposure would **quadruple** inventors. | [backed] |
+| Peer spillover / social multiplier | **Glaeser, Sacerdote & Scheinkman**: local peer effects amplify behaviour; neighbours' outcomes feed back into one's own. Calibrates the `gamma_peer` term (drift toward neighbours' mean wealth). | [partial] |
 | Preferential attachment generates the power law | **Barabasi & Albert 1999 (Science)**. | [backed] |
 
 **Suggested values.** `beta_network` should reproduce roughly a +20% income lift

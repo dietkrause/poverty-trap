@@ -42,3 +42,21 @@ def test_full_model_runs_and_reports() -> None:
     assert "FirstPassageMonitor" in result.reports
     assert "PopulationMetrics" in result.reports
     assert 0.0 <= result.reports["PopulationMetrics"]["gini"] <= 1.0
+
+
+def test_peer_influence_pulls_toward_neighbors() -> None:
+    """Peer spillover should push an agent toward the mean wealth of its ties."""
+    from poverty_trap.core.config import ModelParams
+    from poverty_trap.core.context import SimContext
+    from poverty_trap.core.state import AgentState
+    from poverty_trap.population.network import PeerInfluence
+    import numpy as np
+
+    p = ModelParams()
+    state, ctx = AgentState.initialize(p, np.random.default_rng(0)), None
+    ctx = SimContext(params=p, rng=np.random.default_rng(0))
+    state.wealth[:] = 0.3
+    state.peer_mean_wealth = np.where(np.arange(state.n) < state.n // 2, 0.9, 0.0)
+    d = PeerInfluence().drift(state, ctx)
+    # Agents with richer neighbours get a positive pull; poorer neighbours, negative.
+    assert d[0] > 0 and d[-1] < 0

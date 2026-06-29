@@ -95,6 +95,10 @@ class ModelParams:
     # --- Social network (section 7.6) ---------------------------------------
     beta_network: float = 0.010
     """Drift weight of economic connectedness ``c_i``."""
+    gamma_peer: float = 0.020
+    """Strength of local peer spillover: value creation drifts toward the mean
+    wealth of your network neighbours (knowledge/role-model/demand spillover).
+    With homophily this reinforces both rich and poor clusters."""
     network_degree: int = 6
     """Average number of ties per agent in the generated graph."""
     homophily: float = 0.85
