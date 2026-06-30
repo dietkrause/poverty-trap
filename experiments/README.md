@@ -11,7 +11,7 @@ An agent-based model does not prove a social fact directly. It demonstrates the
 **logical consequences of micro-rules**. So every experiment here answers a
 *conditional* question:
 
-> *If* agents follow the rules in `src/poverty_trap/` calibrated to the values in
+> *If* agents follow the rules in `src/simulation/` calibrated to the values in
 > [`../docs/literature/calibration.md`](../docs/literature/calibration.md),
 > *then* what happens to the outcome we are measuring?
 
@@ -48,7 +48,7 @@ Plots need the optional viz extra: `pip install matplotlib`.
 
 1. Create `experiments/<name>/` with a `README.md` (question, method, expected
    output) and a `run.py`.
-2. Build pipelines with `poverty_trap.builder.build_simulation` (or assemble
+2. Build pipelines with `simulation.builder.build_simulation` (or assemble
    components directly), sweep the variable of interest, average over seeds, and
    write a `results/summary.json`.
 3. State your calibration source and which assumptions you vary. If a finding
@@ -59,3 +59,4 @@ Plots need the optional viz extra: `pip install matplotlib`.
 | Experiment | Question it adjudicates |
 |------------|-------------------------|
 | [`effort-marginal-impact/`](effort-marginal-impact/) | Does effort (value creation) always raise the probability of escape, by how much, and how does its impact vary with structural position? Is "always positive" a finding or an artifact of the efficiency floor? |
+| [`mobility-drivers/`](mobility-drivers/) | Across starting position, effort, regime, opportunity, and networks, which levers move the two mobility outcomes most, and does effort pay off equally under every regime? (Balanced full-factorial; auto-writes a neutral findings document.) |
