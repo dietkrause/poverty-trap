@@ -1,7 +1,7 @@
 """The simulation engine: a deterministic orchestrator over pluggable components.
 
 The engine knows *nothing* about the specific model. It holds ordered lists of
-components (each satisfying one of the protocols in :mod:`poverty_trap.core.protocols`)
+components (each satisfying one of the protocols in :mod:`simulation.core.protocols`)
 and runs them in a fixed order every tick:
 
 1. **drift terms**  -> sum into ``mu``      (flows, scaled by ``dt``)

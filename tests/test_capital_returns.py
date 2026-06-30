@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.dynamics.capital_returns import CapitalReturns
+from simulation.dynamics.capital_returns import CapitalReturns
 
 
 def test_returns_rise_with_wealth(state, ctx) -> None:

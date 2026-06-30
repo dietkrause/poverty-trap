@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from poverty_trap.builder import build_simulation
+from simulation.builder import build_simulation
 
 
 def _mobility(effort: float, *, generational: bool = False, ticks: int = 8000) -> dict:
@@ -46,10 +46,10 @@ def test_full_model_runs_and_reports() -> None:
 
 def test_peer_influence_pulls_toward_neighbors() -> None:
     """Peer spillover should push an agent toward the mean wealth of its ties."""
-    from poverty_trap.core.config import ModelParams
-    from poverty_trap.core.context import SimContext
-    from poverty_trap.core.state import AgentState
-    from poverty_trap.population.network import PeerInfluence
+    from simulation.core.config import ModelParams
+    from simulation.core.context import SimContext
+    from simulation.core.state import AgentState
+    from simulation.population.network import PeerInfluence
     import numpy as np
 
     p = ModelParams()

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.core.config import ModelParams
-from poverty_trap.core.context import SimContext
-from poverty_trap.core.state import AgentState
-from poverty_trap.population.regime import RegimePolicy
+from simulation.core.config import ModelParams
+from simulation.core.context import SimContext
+from simulation.core.state import AgentState
+from simulation.population.regime import RegimePolicy
 
 
 def test_welfare_floor_clamps() -> None:

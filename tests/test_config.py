@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from poverty_trap.core.config import ModelParams
+from simulation.core.config import ModelParams
 
 
 def test_defaults_validate() -> None:

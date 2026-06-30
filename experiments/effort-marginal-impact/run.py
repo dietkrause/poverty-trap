@@ -37,8 +37,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import numpy as np  # noqa: E402
 
-from poverty_trap.builder import build_simulation  # noqa: E402
-from poverty_trap.core.config import ModelParams  # noqa: E402
+from simulation.builder import build_simulation  # noqa: E402
+from simulation.core.config import ModelParams  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 RESULTS = HERE / "results"

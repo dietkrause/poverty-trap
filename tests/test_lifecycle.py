@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.dynamics.effort import ConstantEffort
-from poverty_trap.population.lifecycle import (
+from simulation.dynamics.effort import ConstantEffort
+from simulation.population.lifecycle import (
     FirstPassageMonitor,
     GenerationalTransmission,
     SimpleRestart,

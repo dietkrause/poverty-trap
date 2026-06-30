@@ -3,7 +3,7 @@
 A *life* runs until it resolves - it reaches the rich threshold, hits ruin, or
 ages out. :class:`FirstPassageMonitor` detects resolutions, tallies the outcomes
 that the model is about (left poverty vs became rich, by birth class), and then
-respawns the slot through an injected :class:`~poverty_trap.core.protocols.BirthPolicy`.
+respawns the slot through an injected :class:`~simulation.core.protocols.BirthPolicy`.
 Swapping the birth policy switches between "everyone restarts fresh" and "wealth,
 talent and place are inherited", without touching the engine.
 """

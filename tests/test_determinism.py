@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.builder import build_simulation
+from simulation.builder import build_simulation
 
 
 def test_same_seed_identical() -> None:

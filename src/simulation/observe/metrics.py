@@ -3,7 +3,7 @@
 Observers never mutate the state. They expose a ``report()`` that the engine
 harvests at the end of a run, so every on-screen claim ("X% left poverty",
 "the gap widened") is backed by a recorded number. The first-passage mobility
-rates live on :class:`~poverty_trap.population.lifecycle.FirstPassageMonitor`;
+rates live on :class:`~simulation.population.lifecycle.FirstPassageMonitor`;
 this module covers *population-level* snapshots: inequality and band structure.
 """
 

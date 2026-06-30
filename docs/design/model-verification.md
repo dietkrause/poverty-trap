@@ -7,7 +7,7 @@ implementation deliberately differs from or defers a part of the spec. The goal
 is that a reader can confirm the simulation is a faithful, formal representation
 of the stated assumptions - not a black box.
 
-Reviewed against commit state of `src/poverty_trap/`. Status: **[exact]** code is
+Reviewed against commit state of `src/simulation/`. Status: **[exact]** code is
 the literal equation; **[approx]** a documented numerical approximation;
 **[deferred]** specified in the model but not yet implemented.
 

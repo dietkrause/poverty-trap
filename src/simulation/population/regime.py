@@ -1,7 +1,7 @@
 """Regime policies: the active parts of a country/policy configuration (section 7.9).
 
 Most of a regime is just parameter values (premium scale, opportunity rate,
-inequality, base drifts), which live in :class:`~poverty_trap.core.config.ModelParams`.
+inequality, base drifts), which live in :class:`~simulation.core.config.ModelParams`.
 The two *behavioural* levers - a welfare floor that catches falling agents and a
 redistribution transfer - are applied here as a population process so they run
 each tick on the settled wealth.

@@ -7,7 +7,7 @@ This document does three things the project needs to stay honest:
 2. **Flags the gaps** - assumptions for which we have no direct empirical study,
    so we are explicit about what is invented versus measured.
 3. **Proposes calibration values and model improvements** drawn from the data,
-   so the parameters in `src/poverty_trap/core/config.py` can be moved from
+   so the parameters in `src/simulation/core/config.py` can be moved from
    "illustrative" toward "estimated".
 
 Status legend: **[backed]** a study gives the number/shape directly;

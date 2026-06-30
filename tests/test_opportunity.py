@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.core.config import ModelParams
-from poverty_trap.core.context import SimContext
-from poverty_trap.core.state import AgentState
-from poverty_trap.events.opportunity import OpportunityProcess
+from simulation.core.config import ModelParams
+from simulation.core.context import SimContext
+from simulation.core.state import AgentState
+from simulation.events.opportunity import OpportunityProcess
 
 
 def _setup(**over):

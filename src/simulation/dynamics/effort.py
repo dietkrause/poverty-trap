@@ -5,7 +5,7 @@ object) at birth and on respawn rather than computed in the drift pipeline. This
 keeps "how much effort each agent exerts" swappable - a global constant, a
 distribution across the population, or (later) an adaptive rule - without
 touching the engine. The drift contribution of effort lives in
-:class:`~poverty_trap.dynamics.value_creation.ValueCreation`.
+:class:`~simulation.dynamics.value_creation.ValueCreation`.
 """
 
 from __future__ import annotations

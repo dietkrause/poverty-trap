@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.core.state import AgentState
+from simulation.core.state import AgentState
 
 
 def test_initialize_shapes(params, rng) -> None:

@@ -5,9 +5,9 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from poverty_trap.core.config import ModelParams
-from poverty_trap.core.context import SimContext
-from poverty_trap.core.state import AgentState
+from simulation.core.config import ModelParams
+from simulation.core.context import SimContext
+from simulation.core.state import AgentState
 
 
 @pytest.fixture

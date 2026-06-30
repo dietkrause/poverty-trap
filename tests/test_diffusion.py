@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.core.config import ModelParams
-from poverty_trap.core.context import SimContext
-from poverty_trap.core.state import AgentState
-from poverty_trap.dynamics.diffusion import DiffusionShocks
+from simulation.core.config import ModelParams
+from simulation.core.context import SimContext
+from simulation.core.state import AgentState
+from simulation.dynamics.diffusion import DiffusionShocks
 
 
 def test_increment_mean_near_zero_std_matches_sigma() -> None:

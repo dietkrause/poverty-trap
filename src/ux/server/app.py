@@ -7,8 +7,8 @@ engine's SnapshotEmitter observer (the only coupling, and it is read-only), and
 streams one frame every few ticks. New control messages rebuild the sim.
 
 Run:
-    pip install -r ux/server/requirements.txt
-    uvicorn app:app --reload --app-dir ux/server   # from repo root
+    pip install -r src/ux/server/requirements.txt
+    uvicorn app:app --reload --app-dir src/ux/server   # from repo root
 """
 
 from __future__ import annotations
@@ -21,13 +21,13 @@ from pathlib import Path
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src"))
+SRC = Path(__file__).resolve().parents[1]  # .../src (holds the `simulation` package)
+sys.path.insert(0, str(SRC))
 
-from poverty_trap.builder import build_simulation  # noqa: E402
-from poverty_trap.core.config import ModelParams  # noqa: E402
-from poverty_trap.observe.stream import SnapshotEmitter  # noqa: E402
-from poverty_trap.regimes.presets import PRESETS  # noqa: E402
+from simulation.builder import build_simulation  # noqa: E402
+from simulation.core.config import ModelParams  # noqa: E402
+from simulation.observe.stream import SnapshotEmitter  # noqa: E402
+from simulation.regimes.presets import PRESETS  # noqa: E402
 
 app = FastAPI(title="poverty-trap UX")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])

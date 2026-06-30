@@ -7,7 +7,7 @@ parameter table in ``docs/README.md`` (the v2 model spec).
 
 Keeping all parameters in one frozen dataclass makes runs reproducible and makes
 "change the country/policy" a matter of producing a modified copy (see
-``poverty_trap.regimes``), never mutating global state.
+``simulation.regimes``), never mutating global state.
 """
 
 from __future__ import annotations

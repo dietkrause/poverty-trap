@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.population.network import NetworkDrift, PeerInfluence, SocialNetwork
+from simulation.population.network import NetworkDrift, PeerInfluence, SocialNetwork
 
 
 def test_connectedness_in_unit_interval(state, ctx) -> None:

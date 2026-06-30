@@ -1,4 +1,4 @@
-"""poverty_trap - an agent-based simulation engine for poverty-trap dynamics.
+"""simulation - an agent-based simulation engine for poverty-trap dynamics.
 
 The engine models a population of agents whose wealth evolves as a drift-diffusion
 between a ruin floor and a "Micawber" escape threshold, extended with effort
@@ -7,7 +7,7 @@ and generational transmission. See ``docs/README.md`` for the full model.
 
 Design philosophy
 -----------------
-The engine is a small, composable core (``poverty_trap.core``) that orchestrates a
+The engine is a small, composable core (``simulation.core``) that orchestrates a
 pipeline of independent, single-responsibility components:
 
 * ``DriftTerm``        - contributes to the expected per-agent wealth change (mu).
@@ -18,7 +18,7 @@ pipeline of independent, single-responsibility components:
 
 New behaviour is added by writing a new component, never by editing the engine
 (Open/Closed). The engine depends only on the ``Protocol`` interfaces in
-``poverty_trap.core.protocols`` (Dependency Inversion), and all randomness flows
+``simulation.core.protocols`` (Dependency Inversion), and all randomness flows
 through a single injected generator (deterministic, reproducible runs).
 """
 

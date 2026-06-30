@@ -85,7 +85,7 @@ CLI (`cli.py`) and the tests use it. You can also assemble a custom pipeline
 directly against `Simulation` if you need something non-standard.
 
 ```python
-from poverty_trap.builder import build_simulation
+from simulation.builder import build_simulation
 
 sim = build_simulation(seed=0, effort=0.5, generational=True)
 result = sim.run(20000)

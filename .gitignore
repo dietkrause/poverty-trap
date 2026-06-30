@@ -41,7 +41,6 @@ docs/literature/papers/fulltext/
 # Experiment outputs are generated artifacts, not versioned.
 experiments/**/results/
 
-# UX build artifacts
-ux/web/node_modules/
-ux/web/dist/
-ux/web/.vite/
+# UX build artifacts (Node) - path-independent so a move can't un-ignore them
+node_modules/
+.vite/

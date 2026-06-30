@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.core.config import ModelParams
-from poverty_trap.core.context import SimContext
-from poverty_trap.core.state import AgentState
-from poverty_trap.population.pooling import CollectivePooling
+from simulation.core.config import ModelParams
+from simulation.core.context import SimContext
+from simulation.core.state import AgentState
+from simulation.population.pooling import CollectivePooling
 
 
 def test_disabled_when_rate_zero() -> None:

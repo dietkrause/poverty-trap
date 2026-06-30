@@ -1,4 +1,4 @@
-# `poverty_trap` - simulator internals
+# `simulation` - simulator internals
 
 This is the engineering map of the simulator: what the modules are, how a tick
 flows, who calls whom, where the equations live, how to extend it, and how to run
@@ -199,7 +199,7 @@ classDiagram
 | Tests | `pytest` |
 
 ```python
-from poverty_trap.builder import build_simulation
+from simulation.builder import build_simulation
 sim = build_simulation(seed=0, effort=0.5, generational=True)
 res = sim.run(20000)
 print(res.reports["FirstPassageMonitor"])  # left-poverty vs became-rich

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.core.bands import Band, band_shares, classify, effective_poverty_line
-from poverty_trap.core.config import ModelParams
+from simulation.core.bands import Band, band_shares, classify, effective_poverty_line
+from simulation.core.config import ModelParams
 
 
 def test_classify_maps_to_five_bands() -> None:

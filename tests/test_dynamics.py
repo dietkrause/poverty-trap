@@ -4,17 +4,17 @@ from __future__ import annotations
 
 import numpy as np
 
-from poverty_trap.core.config import ModelParams
-from poverty_trap.core.context import SimContext
-from poverty_trap.core.state import AgentState
-from poverty_trap.dynamics.neighborhood import NeighborhoodDrift
-from poverty_trap.dynamics.poverty_premium import PovertyPremium
-from poverty_trap.dynamics.value_creation import (
+from simulation.core.config import ModelParams
+from simulation.core.context import SimContext
+from simulation.core.state import AgentState
+from simulation.dynamics.neighborhood import NeighborhoodDrift
+from simulation.dynamics.poverty_premium import PovertyPremium
+from simulation.dynamics.value_creation import (
     ValueCreation,
     effort_efficiency,
     effort_quality,
 )
-from poverty_trap.observe.metrics import gini
+from simulation.observe.metrics import gini
 
 
 def _ctx(params: ModelParams) -> tuple[AgentState, SimContext]:

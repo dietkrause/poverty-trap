@@ -6,8 +6,8 @@ import json
 
 import numpy as np
 
-from poverty_trap.observe.metrics import gini
-from poverty_trap.observe.stream import SnapshotEmitter
+from simulation.observe.metrics import gini
+from simulation.observe.stream import SnapshotEmitter
 
 
 def test_gini_bounds() -> None:

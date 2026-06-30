@@ -2,11 +2,11 @@
 
 A web UI to watch the simulation evolve. It is fully isolated from the engine:
 the only coupling is the read-only `SnapshotEmitter` observer
-(`src/poverty_trap/observe/stream.py`), which streams compact frames; nothing in
+(`src/simulation/observe/stream.py`), which streams compact frames; nothing in
 `src/` depends on this folder.
 
 ```
-ux/
+src/ux/
   server/   FastAPI WebSocket backend (streams sim frames)
   web/      Vite + React + TypeScript + Tailwind frontend
 ```
@@ -16,14 +16,14 @@ ux/
 Backend (from repo root):
 
 ```bash
-pip install -r ux/server/requirements.txt
-uvicorn app:app --app-dir ux/server   # serves ws://localhost:8000/ws
+pip install -r src/ux/server/requirements.txt
+uvicorn app:app --app-dir src/ux/server   # serves ws://localhost:8000/ws
 ```
 
 Frontend:
 
 ```bash
-cd ux/web
+cd src/ux/web
 npm install
 npm run dev                            # http://localhost:5173
 ```

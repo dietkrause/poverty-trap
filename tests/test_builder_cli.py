@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from poverty_trap.builder import build_simulation
-from poverty_trap.cli import main
-from poverty_trap.regimes.presets import PRESETS, get_preset
+from simulation.builder import build_simulation
+from simulation.cli import main
+from simulation.regimes.presets import PRESETS, get_preset
 
 
 def test_toggles_change_component_count() -> None:
