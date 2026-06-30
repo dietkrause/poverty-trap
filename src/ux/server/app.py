@@ -8,7 +8,7 @@ streams one frame every few ticks. New control messages rebuild the sim.
 
 Run:
     pip install -r src/ux/server/requirements.txt
-    uvicorn app:app --reload --app-dir src/ux/server   # from repo root
+    python -m uvicorn app:app --reload --app-dir src/ux/server   # from repo root
 """
 
 from __future__ import annotations
@@ -21,12 +21,14 @@ from pathlib import Path
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-SRC = Path(__file__).resolve().parents[1]  # .../src (holds the `simulation` package)
+SRC = Path(__file__).resolve().parents[2]  # .../src (holds the `simulation` package)
 sys.path.insert(0, str(SRC))
 
 from simulation.builder import build_simulation  # noqa: E402
 from simulation.core.config import ModelParams  # noqa: E402
+from simulation.core.engine import Simulation  # noqa: E402
 from simulation.observe.stream import SnapshotEmitter  # noqa: E402
+from simulation.population.lifecycle import FirstPassageMonitor  # noqa: E402
 from simulation.regimes.presets import PRESETS  # noqa: E402
 
 app = FastAPI(title="poverty-trap UX")
@@ -43,7 +45,7 @@ def make_params(ctrl: dict) -> ModelParams:
     return base.evolve(**safe) if safe else base
 
 
-def build(ctrl: dict):
+def build(ctrl: dict) -> Simulation:
     sim = build_simulation(
         make_params(ctrl),
         seed=int(ctrl.get("seed", 0)),
@@ -55,6 +57,14 @@ def build(ctrl: dict):
     return sim
 
 
+def find_monitor(sim: Simulation) -> FirstPassageMonitor | None:
+    """Locate the first-passage monitor so the live mobility rates can be read."""
+    for pop in sim.population_processes:
+        if isinstance(pop, FirstPassageMonitor):
+            return pop
+    return None
+
+
 @app.websocket("/ws")
 async def ws(socket: WebSocket) -> None:
     await socket.accept()
@@ -62,6 +72,7 @@ async def ws(socket: WebSocket) -> None:
     frames: list[dict] = []
     sim = build(ctrl)
     sim.observers.append(SnapshotEmitter(sink=frames.append, every=15))
+    monitor = find_monitor(sim)
     try:
         while True:
             # Non-blocking check for a new control message.
@@ -70,13 +81,21 @@ async def ws(socket: WebSocket) -> None:
                 ctrl.update(json.loads(msg))
                 sim = build(ctrl)
                 sim.observers.append(SnapshotEmitter(sink=frames.append, every=15))
+                monitor = find_monitor(sim)
+                frames.clear()
             except (asyncio.TimeoutError, json.JSONDecodeError):
                 pass
 
             sim.step()
             if frames:
-                await socket.send_text(json.dumps(frames.pop()))
+                frame = frames.pop()
                 frames.clear()
+                # Merge the live two-probability mobility report (+ IGE) into the frame.
+                if monitor is not None:
+                    frame["mobility"] = monitor.report()
+                frame["controls"] = {k: ctrl.get(k) for k in
+                                     ("effort", "regime", "generational", "opportunity", "network", "seed")}
+                await socket.send_text(json.dumps(frame))
             await asyncio.sleep(0.03)
     except WebSocketDisconnect:
         return

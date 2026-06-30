@@ -17,7 +17,7 @@ Backend (from repo root):
 
 ```bash
 pip install -r src/ux/server/requirements.txt
-uvicorn app:app --app-dir src/ux/server   # serves ws://localhost:8000/ws
+python -m uvicorn app:app --app-dir src/ux/server   # serves ws://localhost:8000/ws
 ```
 
 Frontend:

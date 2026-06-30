@@ -61,4 +61,6 @@ class OpportunityProcess:
             "arrived": int(idx.size),
             "captured": int(np.count_nonzero(captured)),
             "captured_value": float(np.sum(gain)),
+            # A small sample of payoff sizes feeds the UI's heavy-tail histogram.
+            "payoff_samples": np.round(payoff[:24], 4).tolist(),
         }
