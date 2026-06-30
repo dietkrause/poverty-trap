@@ -10,11 +10,12 @@ talent and place are inherited", without touching the engine.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 
 from ..core.context import SimContext
+from ..core.protocols import BirthPolicy
 from ..core.state import AgentState
 from ..dynamics.effort import EffortPolicy
 
@@ -124,12 +125,17 @@ class _Counter:
     attempts: int = 0
     reached_rich: int = 0
     left_poverty: int = 0
+    time_above_sum: float = 0.0  # sum over resolved lives of (ticks above line / age)
 
     def rate_rich(self) -> float:
         return self.reached_rich / self.attempts if self.attempts else 0.0
 
     def rate_left_poverty(self) -> float:
         return self.left_poverty / self.attempts if self.attempts else 0.0
+
+    def mean_time_above(self) -> float:
+        """Average share of life spent at or above the poverty line."""
+        return self.time_above_sum / self.attempts if self.attempts else 0.0
 
 
 class FirstPassageMonitor:
@@ -145,23 +151,27 @@ class FirstPassageMonitor:
 
     name = "first_passage"
 
-    def __init__(self, births, lifespan_ticks: int = 4000) -> None:
+    def __init__(self, births: BirthPolicy, lifespan_ticks: int = 4000) -> None:
         self.births = births
         self.lifespan = int(lifespan_ticks)
         self.poor = _Counter()
         self.rich = _Counter()
         self._age: np.ndarray | None = None
+        self._ticks_above: np.ndarray | None = None
         self._ige_parent: list[float] = []
         self._ige_child: list[float] = []
 
     def step(self, state: AgentState, ctx: SimContext) -> None:
         p = ctx.params
-        if self._age is None:
+        if self._age is None or self._ticks_above is None:
             self._age = np.zeros(state.n, dtype=np.int64)
+            self._ticks_above = np.zeros(state.n, dtype=np.int64)
 
-        # Track "ever left poverty" for the current life.
-        state.ever_left_poverty |= state.wealth >= p.poverty_line
+        # Track "ever left poverty" and time spent at/above the line for this life.
+        above = state.wealth >= p.poverty_line
+        state.ever_left_poverty |= above
         self._age += 1
+        self._ticks_above += above
 
         reached_rich = state.wealth >= p.rich_threshold
         ruined = state.wealth <= p.ruin
@@ -174,13 +184,19 @@ class FirstPassageMonitor:
         born_poor = state.zone[idx] == 0
         escaped = reached_rich[idx]
         left = state.ever_left_poverty[idx]
+        # Durable measure: share of the life spent at/above the line (a transient
+        # crosser scores near 0; someone who stayed out scores near 1). This is
+        # what separates "ever touched the line" from "actually lived out of it".
+        frac_above = self._ticks_above[idx] / np.maximum(self._age[idx], 1)
 
         self.poor.attempts += int(np.count_nonzero(born_poor))
         self.poor.reached_rich += int(np.count_nonzero(escaped & born_poor))
         self.poor.left_poverty += int(np.count_nonzero(left & born_poor))
+        self.poor.time_above_sum += float(np.sum(frac_above[born_poor]))
         self.rich.attempts += int(np.count_nonzero(~born_poor))
         self.rich.reached_rich += int(np.count_nonzero(escaped & ~born_poor))
         self.rich.left_poverty += int(np.count_nonzero(left & ~born_poor))
+        self.rich.time_above_sum += float(np.sum(frac_above[~born_poor]))
 
         # Intergenerational pairs (only where this life had a recorded parent).
         pw = state.parent_wealth[idx]
@@ -190,9 +206,10 @@ class FirstPassageMonitor:
             self._ige_parent.extend(np.log(pw[valid]).tolist())
             self._ige_child.extend(np.log(fw).tolist())
 
-        # Respawn the resolved slots and reset their age.
+        # Respawn the resolved slots and reset their age and time-above counter.
         self.births.spawn(state, idx, ctx)
         self._age[idx] = 0
+        self._ticks_above[idx] = 0
 
     def ige(self) -> float | None:
         """Estimate the intergenerational elasticity, or ``None`` if too few pairs."""
@@ -202,17 +219,27 @@ class FirstPassageMonitor:
         return float(slope)
 
     def report(self) -> dict:
-        """Summarise the two distinct mobility probabilities (and IGE)."""
+        """Summarise the mobility outcomes and the IGE.
+
+        For each birth class: ``left_poverty`` (ever crossed the line, possibly
+        transiently) and ``became_rich`` (reached the rich threshold) are
+        first-passage probabilities; ``time_above_line`` is the *average share of
+        a life spent at or above the poverty line* - a durability measure that
+        separates a transient crossing (near 0) from genuinely living out of
+        poverty (near 1).
+        """
         return {
             "birth_policy": getattr(self.births, "name", "?"),
             "poor": {
                 "attempts": self.poor.attempts,
                 "became_rich": round(self.poor.rate_rich(), 4),
+                "time_above_line": round(self.poor.mean_time_above(), 4),
                 "left_poverty": round(self.poor.rate_left_poverty(), 4),
             },
             "rich": {
                 "attempts": self.rich.attempts,
                 "became_rich": round(self.rich.rate_rich(), 4),
+                "time_above_line": round(self.rich.mean_time_above(), 4),
                 "left_poverty": round(self.rich.rate_left_poverty(), 4),
             },
             "ige": self.ige(),

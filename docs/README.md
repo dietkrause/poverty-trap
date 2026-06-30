@@ -437,21 +437,29 @@ For each living agent $i$, with step $dt$:
 6. age; on death reproduce (7.8); periodically rewire the network (7.6).
 
 ### 7.12 Parameter table (v2 additions)
-| Param | Meaning | Start |
+| Param | Meaning | Calibrated default |
 |-------|---------|-------|
 | $\eta_{\min}, k_w, k_s$ | efficiency floor, wealth and stressor sensitivity | 0.3, 4, 1.5 |
 | $q_{\min}, h_{1/2}$ | quality floor, skill half-saturation | 0.4, 0.5 |
 | $s_{\max}, w_{\text{sub}}, k_h$ | max savings share, subsistence, skill sensitivity | 0.3, 0.1, 3 |
-| $r$ | return on invested capital | 0.03 per period |
+| $r$, slope | return on invested capital, wealth-slope | 0.003, 0.0 per period |
 | $\lambda_0, g_z, g_c$ | base opportunity rate, zone and network gains | 0.1, 1.0, 1.5 |
-| $a, x_{\min}, \kappa$ | Pareto shape, min payoff, capture scale | 1.5, 0.02, 1.0 |
-| $\beta_N$ | network drift weight | 0.01 |
-| $b, \rho, p_{\text{move}}$ | inheritance, talent heritability, mobility | 0.4, 0.4, 0.05 |
-| bands $w_p, w_m, w_a, w^{*}$ | continuum cutoffs | 0.2, 0.45, 0.7, 1.0 |
+| $a, x_{\min}, \kappa$ | Pareto shape, min payoff, capture scale | 1.5, 0.02, 0.03 |
+| $\beta_N, \gamma_{\text{peer}}$ | network drift weight, peer-spillover weight | 0.003, 0.01 |
+| $\alpha$ | value-creation weight | 0.012 |
+| $\mu_{\text{base}}$ (poor, rich) | base drift / cost-of-living drag by zone | -0.015, -0.008 |
+| starts (poor, rich) | birth wealth by zone | 0.05, 0.12 |
+| $b, \rho, p_{\text{move}}$ | inheritance, talent heritability, mobility | 0.10, 0.25, 0.05 |
+| bands $w_p, w_m, w_a, w^{*}$ | continuum cutoffs | 0.10, 0.25, 0.55, 1.0 |
 
-> Calibration discipline: only $b, \rho, \lambda_0, a, \pi_0$ get tuned to real targets
-> (IGE, generations-to-mean, escape rates). The rest stay fixed, a direct answer to
-> "resultado de escritorio".
+> **Calibration.** The defaults above put the model in a *realistic* regime: the
+> wealth process is near-mean-reverting (a small cost-of-living drag, $\mu_{\text{base}}<0$)
+> with a heavy-tailed upside, so reaching $w^{*}$ is a **rare tail event** (~5% of
+> poor-born lives, not a majority), the intergenerational elasticity sits in the
+> Great Gatsby range ($\mathrm{IGE}\approx 0.3\text{-}0.6$), and the distribution is
+> bottom/middle-heavy. Targets and an auditable check live in
+> `experiments/calibration/`; the record is in `docs/literature/calibration.md`.
+> These are illustrative targets, **not** a fit to any specific country.
 
 ### 7.13 How it all fits in one sentence
 Who you are (7.1, 7.7) and where you are (7.4-7.6) set your drift and your opportunity

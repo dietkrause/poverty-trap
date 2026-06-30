@@ -93,10 +93,10 @@ def run(ticks: int, seeds: int, steps: int) -> dict:
     for name, params in conditions().items():
         became_rich, left_poverty = [], []
         for e in efforts:
-            r, l = escape_rates(params, e, ticks=ticks, seeds=seeds)
+            r, lp = escape_rates(params, e, ticks=ticks, seeds=seeds)
             became_rich.append(round(r, 4))
-            left_poverty.append(round(l, 4))
-            print(f"  {name:>20} | effort={e:.2f} | became_rich={r:.3f} left_poverty={l:.3f}")
+            left_poverty.append(round(lp, 4))
+            print(f"  {name:>20} | effort={e:.2f} | became_rich={r:.3f} left_poverty={lp:.3f}")
         slope_rich = marginal(efforts, became_rich)
         out["conditions"][name] = {
             "became_rich": became_rich,
@@ -151,10 +151,15 @@ def plot(out: dict) -> str | None:
         ax1.plot(e, c["became_rich"], marker="o", label=name)
         ax2.plot(e, c["marginal_impact_became_rich"], marker="o", label=name)
     ax1.set_title("P(became rich | born poor) vs effort")
-    ax1.set_xlabel("effort"); ax1.set_ylabel("probability"); ax1.set_ylim(0, 1); ax1.legend()
+    ax1.set_xlabel("effort")
+    ax1.set_ylabel("probability")
+    ax1.set_ylim(0, 1)
+    ax1.legend()
     ax2.axhline(0.0, color="#888", ls="--", lw=1)
     ax2.set_title("Marginal impact of effort  dP/d(effort)")
-    ax2.set_xlabel("effort"); ax2.set_ylabel("slope"); ax2.legend()
+    ax2.set_xlabel("effort")
+    ax2.set_ylabel("slope")
+    ax2.legend()
     fig.tight_layout()
     dest = RESULTS / "effort_impact.png"
     fig.savefig(dest, dpi=150)

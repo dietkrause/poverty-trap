@@ -200,7 +200,7 @@ def rank_drivers(effects: dict) -> list[tuple[str, float]]:
 # --------------------------------------------------------------------------- #
 def _direction(level_means: dict, levels: list) -> str:
     """Describe monotonicity of an outcome across an ordered factor's levels."""
-    seq = [level_means[str(l)] for l in levels if level_means.get(str(l)) is not None]
+    seq = [level_means[str(lv)] for lv in levels if level_means.get(str(lv)) is not None]
     if len(seq) < 2:
         return "insufficient data"
     diffs = np.diff(seq)
@@ -437,8 +437,10 @@ def plot(records: list[dict]) -> str | None:
     for regime, row in inter.items():
         ax2.plot(efforts, [row[str(e)] for e in efforts], marker="o", label=regime)
     ax2.set_title("Effort x regime: P(became rich | born poor)")
-    ax2.set_xlabel("effort"); ax2.set_ylabel("probability")
-    ax2.set_ylim(0, 1); ax2.legend(title="regime")
+    ax2.set_xlabel("effort")
+    ax2.set_ylabel("probability")
+    ax2.set_ylim(0, 1)
+    ax2.legend(title="regime")
 
     fig.tight_layout()
     dest = RESULTS / "mobility_drivers.png"
@@ -452,7 +454,7 @@ def plot(records: list[dict]) -> str | None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--ticks", type=int, default=5000, help="steps per run (default 5000)")
+    ap.add_argument("--ticks", type=int, default=12000, help="steps per run (default 12000)")
     ap.add_argument("--seeds", type=int, default=4, help="seeds averaged per cell (default 4)")
     args = ap.parse_args()
 

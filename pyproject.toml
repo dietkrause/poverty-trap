@@ -28,8 +28,8 @@ viz = ["matplotlib>=3.7"]
 poverty-trap = "simulation.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/diet-krause/poverty-trap"
-Documentation = "https://github.com/diet-krause/poverty-trap/tree/main/docs"
+Homepage = "https://github.com/dietkrause/poverty-trap"
+Documentation = "https://github.com/dietkrause/poverty-trap/tree/main/docs"
 
 [tool.setuptools.packages.find]
 where = ["src"]

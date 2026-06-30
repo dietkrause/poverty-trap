@@ -26,7 +26,7 @@ are in **[`docs/README.md`](docs/README.md)**.
 Requires Python 3.10+.
 
 ```bash
-git clone https://github.com/diet-krause/poverty-trap
+git clone https://github.com/dietkrause/poverty-trap
 cd poverty-trap
 pip install -e .            # add ".[dev,viz]" for tests, lint, and plotting
 ```
@@ -81,14 +81,14 @@ prints a JSON report:
   "effort": 0.5,
   "mobility": {
     "birth_policy": "generational_transmission",
-    "poor": { "attempts": 6758, "became_rich": 0.3711, "left_poverty": 0.6761 },
-    "rich": { "attempts": 8120, "became_rich": 0.9999, "left_poverty": 1.0 },
-    "ige": 3.49
+    "poor": { "attempts": 7138, "became_rich": 0.049, "time_above_line": 0.272, "left_poverty": 0.477 },
+    "rich": { "attempts": 5273, "became_rich": 0.078, "time_above_line": 0.602, "left_poverty": 0.944 },
+    "ige": 0.59
   },
-  "gini": 0.236,
+  "gini": 0.338,
   "band_shares": {
-    "pobreza": 0.1042, "vulnerable": 0.1792, "media": 0.2625,
-    "acomodado": 0.4542, "rico": 0.0
+    "pobreza": 0.10, "vulnerable": 0.32, "media": 0.45,
+    "acomodado": 0.13, "rico": 0.0
   }
 }
 ```
@@ -102,12 +102,17 @@ mobility events**, not one "success rate".
   *born* (the poor zone vs the rich zone). The gap between these two blocks *is*
   the poverty trap: same rules, different starting line.
 - **`became_rich`** - probability a life reached the rich threshold `w*`
-  (`rich_threshold`, default `1.0`). This is "became rich".
+  (`rich_threshold`, default `1.0`). At the calibrated defaults this is a rare,
+  tail event (a few percent), not a typical outcome.
+- **`time_above_line`** - the *average share of a life* spent at or above the
+  poverty line: a **durability** measure. A life that touched the line once by a
+  lucky shock and fell back scores near `0`; one that genuinely lived out of
+  poverty scores near `1`. This sits between `left_poverty` and `became_rich`.
 - **`left_poverty`** - probability a life *ever* crossed the poverty line `w_p`
-  (`poverty_line`, default `0.20`) upward at least once. This is "escaped
-  poverty" and is a **strictly easier, distinct event** - which is why
-  `left_poverty` is always >= `became_rich`. Separating these two answers the #1
-  audience critique: *leaving poverty is not the same as getting rich.*
+  (`poverty_line`, default `0.10`) upward at least once. This is the most
+  generous "escaped" event (first passage, possibly transient), which is why
+  `left_poverty` >= `time_above_line` >= `became_rich`. Separating these answers
+  the #1 audience critique: *leaving poverty is not the same as getting rich.*
 - **`attempts`** - how many lives resolved in that group over the run (more ticks
   -> more attempts -> tighter probability estimates).
 - **`ige`** - intergenerational elasticity: the slope of `log(child wealth)` vs
@@ -123,10 +128,14 @@ mobility events**, not one "success rate".
   life (it respawns), so the snapshot shows the living distribution *below* the
   finish line, not a pile-up at it.
 
-Reading the two examples together: at **effort 0.0** the poor become rich ~17% of
-the time; at **effort 0.5** that jumps to ~37%, while the born-rich stay at
-~98-100%. Effort moves the poor a lot and the rich barely at all - effort is a
-real lever, but it does not erase the structural head start.
+Reading the calibrated numbers: a poor-born life **ever crosses** the poverty line
+~48% of the time, but spends only ~27% of its life durably above it, and **reaches
+the top just ~5%** of the time; born-rich reach the top ~8%. The model is
+calibrated so that becoming rich is a rare tail event and escaping poverty is far
+more common than getting rich - the realistic shape. Effort still shifts the poor's
+odds upward, but it does not erase the structural head start. The calibration
+targets and an auditable check live in
+[`experiments/calibration/`](experiments/calibration/).
 
 ### 3. Chaining parameters to ask different questions
 
@@ -206,7 +215,7 @@ sim = build_simulation(
 )
 result = sim.run(20000)
 
-mob = result.reports["first_passage"]
+mob = result.reports["FirstPassageMonitor"]
 print(mob["poor"]["became_rich"], mob["poor"]["left_poverty"], mob["ige"])
 print(result.reports["PopulationMetrics"]["gini"])
 ```
@@ -249,6 +258,34 @@ src/simulation/
   cli.py        command-line interface
 ```
 
+## Live visualization (the dashboard)
+
+`src/ux/` is a live web dashboard that renders **every dynamic of the model** as
+you steer it: the agent field (color = band, size = effort, opacity = the scarcity
+tax η), the two mobility probabilities (left poverty vs became rich) with IGE, the
+wealth-band continuum, the effort decomposition (η/q/savings, poor vs rich),
+inequality over time (Gini + wealth gap), opportunity (heavy-tailed payoffs),
+networks/pooling, and a talent-vs-luck scatter. A FastAPI WebSocket backend
+streams frames from the engine (via the read-only `SnapshotEmitter`); nothing in
+`src/simulation/` depends on the UI.
+
+Two processes, from the repo root:
+
+```bash
+# 1) backend  (streams ws://localhost:8000/ws)
+pip install -r src/ux/server/requirements.txt
+python -m uvicorn app:app --app-dir src/ux/server
+
+# 2) frontend (opens http://localhost:5173)
+cd src/ux/web
+npm install
+npm run dev
+```
+
+Then open <http://localhost:5173> and move the effort slider, switch regimes
+(harsh / mixed / protective), or toggle mechanisms — the simulation rebuilds and
+re-streams live. More detail in [`src/ux/README.md`](src/ux/README.md).
+
 ## Documentation
 
 - [`docs/README.md`](docs/README.md) - the model: thesis, full math (sections
@@ -284,9 +321,14 @@ networks, and policy regimes. Details in `docs/README.md` sections 4 and 8.
 
 ## Status
 
-Alpha. The defaults are illustrative, not calibrated estimates of any country.
-Only the parameters noted in `docs/README.md` should be tuned to real targets
-(IGE, generations-to-mean, escape rates); the rest are structural and fixed.
+Alpha. The defaults are **calibrated to a realistic regime** - reaching the top is
+a rare tail event (~5% of poor-born lives), intergenerational elasticity sits in
+the Great Gatsby range (IGE ~0.3-0.6), and the wealth distribution is
+bottom/middle-heavy - but they are **not** fit to any specific country. The
+calibration is checked, with its targets and sources, in
+[`experiments/calibration/`](experiments/calibration/); re-run it after any
+parameter change. The `harsh`/`mixed`/`protective` regimes are illustrative
+contrasts, not real countries.
 
 ## Contributing
 

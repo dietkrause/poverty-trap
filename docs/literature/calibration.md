@@ -206,6 +206,53 @@ In priority order, each backed by a paper above:
    current 2.0.
 3. **Keep `pareto_a ~ 1.5`** (Vermeulen 2018; Benhabib & Bisin 2018) - already
    correct.
+
+---
+
+## Calibration record: v2 realistic defaults
+
+An earlier (illustrative) parameterisation put the model in an **unrealistic
+regime**: a majority of *all* lives reached the "rich" band (~70%), born-rich
+reached it ~100% of the time, ~45% of the living population sat in the *acomodado*
+band, and the simulated intergenerational elasticity was far above 1. The cause
+was structural, not a single bad number: a **bounded drift-diffusion with net
+upward drift** (positive base drift in the rich zone, strong value-creation and
+capital-compounding terms, and a large opportunity-capture scale `kappa`) carries
+almost every agent up to the `w*` ceiling. In such a process the top is not a
+tail - it is where ordinary drift takes you.
+
+The defaults were re-calibrated so the wealth process is **near-mean-reverting
+with a heavy-tailed upside**, making `w*` a rare destination:
+
+| Parameter | Old | Calibrated | Rationale |
+|-----------|-----|------------|-----------|
+| `mu_base_poor`, `mu_base_rich` | -0.010, +0.020 | -0.015, -0.008 | a cost-of-living drag for both zones; the rich zone's is *smaller* (a relative, not absolute, edge - Chetty) |
+| `alpha` (value-creation) | 0.060 | 0.012 | effort still helps, but does not deterministically lift everyone |
+| `kappa` (opportunity scale) | 1.0 | 0.03 | opportunities are heavy-tailed but only the extreme tail reaches the top |
+| `r`, `r_wealth_slope` | 0.007, 0.020 | 0.003, 0.0 | capital still compounds but is not a guaranteed escalator |
+| `beta_network`, `gamma_peer` | 0.010, 0.020 | 0.003, 0.010 | social lift is modest, not dominant |
+| starts (poor, rich) | 0.15, 0.55 | 0.05, 0.12 | nobody is born pre-loaded near `w*` (gambler's-ruin: a start at 0.55 hits 1.0 ~55% of the time) |
+| bands `w_p, w_m, w_a` | 0.20, 0.45, 0.70 | 0.10, 0.25, 0.55 | rescaled so the bulk spreads across the lower bands |
+| `inherit_fraction` `b`, `talent_heritability` `rho` | 0.40, 0.40 | 0.10, 0.25 | brings the IGE into the Great Gatsby range [0.3, 0.6] |
+
+**Resulting regime (4 seeds, effort 0.5; see `experiments/calibration/`):**
+P(rich \| born poor) ~5%, P(rich \| population) ~6%, IGE ~0.5, durable escape
+(`time_above_line`) ~27% (>> P(rich)), and a bottom/middle-heavy distribution
+(~80% below the *acomodado* band). All six calibration checks pass.
+
+**Known limitation - the welfare floor.** A reflecting `welfare_floor` removes the
+absorbing ruin barrier, which in this calibration is too powerful: with no
+downward exit, almost every floored life eventually reaches `w*` over a long
+lifespan (~80% become rich for any floor > 0). The `protective` preset therefore
+expresses protection through a *smaller cost-of-living drag*, lower premium,
+education head-start, and redistribution rather than a hard floor. A **soft floor**
+(extra positive drift near the bottom instead of a reflecting barrier) is the
+right future fix; the hard floor remains available for programmatic study but is
+not used in any preset and is not exposed in the UI.
+
+These remain **illustrative** targets, not a fit to any specific country. Re-run
+`experiments/calibration/run.py` after any parameter change to confirm the model
+is still in a realistic regime.
 4. **`premium` as ~2-3% of income/year** (Davies 2016; Davies & Evans 2023).
 5. **Regime-specific `b, rho` targeting IGE 0.15 (Nordic) to 0.5 (US/UK)** (Corak
    2013; Jantti 2006; Chetty 2014).

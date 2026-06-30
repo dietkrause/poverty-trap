@@ -14,6 +14,7 @@ import numpy as np
 
 from .core.config import ModelParams
 from .core.engine import Simulation
+from .core.protocols import DriftTerm, EventProcess, NoiseTerm, Observer, PopulationProcess
 from .dynamics.capital_returns import CapitalReturns
 from .dynamics.diffusion import DiffusionShocks
 from .dynamics.effort import ConstantEffort, EffortPolicy
@@ -77,14 +78,14 @@ def build_simulation(
     effort_policy: EffortPolicy = ConstantEffort(effort) if isinstance(effort, (int, float)) else effort
 
     # 1-2. Drift and noise. Order within drift does not matter (they are summed).
-    drift_terms = [NeighborhoodDrift(), PovertyPremium(), ValueCreation(), CapitalReturns()]
+    drift_terms: list[DriftTerm] = [NeighborhoodDrift(), PovertyPremium(), ValueCreation(), CapitalReturns()]
     if with_network:
         drift_terms.append(NetworkDrift())
         drift_terms.append(PeerInfluence())
-    noise_terms = [DiffusionShocks()]
+    noise_terms: list[NoiseTerm] = [DiffusionShocks()]
 
     # 4. Discrete events.
-    event_processes = [OpportunityProcess()] if with_opportunity else []
+    event_processes: list[EventProcess] = [OpportunityProcess()] if with_opportunity else []
 
     # 5. Population processes - ORDER MATTERS:
     #    grow skill -> refresh network -> apply regime (welfare/redistribution)
@@ -92,7 +93,7 @@ def build_simulation(
     births = (
         GenerationalTransmission(effort_policy) if generational else SimpleRestart(effort_policy)
     )
-    population_processes = [SkillGrowth()]
+    population_processes: list[PopulationProcess] = [SkillGrowth()]
     if with_network:
         population_processes.append(SocialNetwork())
         population_processes.append(CollectivePooling())
@@ -100,7 +101,7 @@ def build_simulation(
     population_processes.append(FirstPassageMonitor(births, lifespan_ticks=lifespan_ticks))
 
     # 6. Observers.
-    observers = [PopulationMetrics(every=metrics_every)]
+    observers: list[Observer] = [PopulationMetrics(every=metrics_every)]
 
     sim = Simulation(
         params,

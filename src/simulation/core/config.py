@@ -38,25 +38,26 @@ class ModelParams:
     """Absorbing ruin barrier (debt / collapse)."""
     rich_threshold: float = 1.0
     """Upper Micawber threshold ``w*``: reaching it = 'became rich'."""
-    poverty_line: float = 0.20
+    poverty_line: float = 0.10
     """``w_p``: below it the poverty premium switches on; crossing it upward =
     'left poverty' (a distinct event from becoming rich)."""
-    band_vulnerable: float = 0.45
+    band_vulnerable: float = 0.25
     """``w_m``: pobreza/vulnerable -> media cutoff (continuum reporting only)."""
-    band_acomodado: float = 0.70
+    band_acomodado: float = 0.55
     """``w_a``: media -> acomodado cutoff (continuum reporting only)."""
-    start_poor: float = 0.15
+    start_poor: float = 0.05
     """Birth wealth of an agent born poor (near the ruin floor)."""
-    start_rich: float = 0.55
+    start_rich: float = 0.12
     """Birth wealth of an agent born rich (with a cushion)."""
     poor_fraction: float = 0.5
     """Fraction of the population that starts in the poor zone."""
 
     # --- Neighbourhood drift (Chetty) and poverty premium (Ghatak) ----------
-    mu_base_poor: float = -0.010
-    """Base drift in the poor zone (negative: drifts toward ruin)."""
-    mu_base_rich: float = 0.020
-    """Base drift in the rich zone (positive)."""
+    mu_base_poor: float = -0.015
+    """Base drift in the poor zone (negative: a cost-of-living drag toward ruin)."""
+    mu_base_rich: float = -0.008
+    """Base drift in the rich zone. Still a drag, but smaller than the poor zone's:
+    the neighbourhood advantage is *relative* (Chetty), not a guaranteed climb."""
     premium: float = 0.004
     """``pi_0``: extra negative drift while below the poverty line."""
 
@@ -67,7 +68,7 @@ class ModelParams:
     """Shock volatility for rich agents (cushion absorbs shocks)."""
 
     # --- Effort: magnitude x efficiency x direction (sections 7.2-7.4) ------
-    alpha: float = 0.060
+    alpha: float = 0.012
     """Drift bought per unit of effective effort (value creation weight)."""
     eta_min: float = 0.30
     """Floor of effort-to-value efficiency (the scarcity tax floor)."""
@@ -89,16 +90,17 @@ class ModelParams:
     """Sensitivity of the savings share to skill."""
     h_bar: float = 0.50
     """Skill reference point for the savings-share logistic."""
-    r: float = 0.007
+    r: float = 0.003
     """Base return on invested capital (low-wealth) per period."""
-    r_wealth_slope: float = 0.020
+    r_wealth_slope: float = 0.0
     """Extra return at the rich threshold: r(w) rises from r to r + slope across
-    the wealth range (Fagereng 2020: returns rise ~180 bps P10->P90)."""
+    the wealth range (Fagereng 2020). Off by default in the calibrated baseline;
+    raise it to study returns-driven divergence."""
 
     # --- Social network (section 7.6) ---------------------------------------
-    beta_network: float = 0.010
+    beta_network: float = 0.003
     """Drift weight of economic connectedness ``c_i``."""
-    gamma_peer: float = 0.020
+    gamma_peer: float = 0.010
     """Strength of local peer spillover: value creation drifts toward the mean
     wealth of your network neighbours (knowledge/role-model/demand spillover).
     With homophily this reinforces both rich and poor clusters."""
@@ -123,7 +125,7 @@ class ModelParams:
     """Pareto shape of opportunity payoffs (1 < a <= 2: heavy tail)."""
     x_min: float = 0.02
     """Minimum opportunity payoff (Pareto scale)."""
-    kappa: float = 1.0
+    kappa: float = 0.03
     """Scale converting a captured payoff into a wealth jump."""
     skill_gate: float = 0.5
     """Skill needed to capture a unit-size opportunity (scales with payoff)."""
@@ -131,9 +133,9 @@ class ModelParams:
     """Minimum effective effort (e*eta) required to act on an opportunity."""
 
     # --- Generational transmission (section 7.8) ----------------------------
-    inherit_fraction: float = 0.40
+    inherit_fraction: float = 0.10
     """``b``: fraction of a parent's final wealth inherited by the child."""
-    talent_heritability: float = 0.40
+    talent_heritability: float = 0.25
     """``rho``: correlation between parent and child talent."""
     move_probability: float = 0.05
     """Probability a child is born into a different zone than the parent."""

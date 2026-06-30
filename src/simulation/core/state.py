@@ -45,8 +45,8 @@ class AgentState:
     resolved: np.ndarray          # int8: 0 = striving, +1 = reached rich, -1 = ruined
 
     # Per-tick scratch space (filled by the drift pipeline / network, read by observers)
-    last_drift: np.ndarray = field(default=None)  # type: ignore[assignment]
-    peer_mean_wealth: np.ndarray = field(default=None)  # type: ignore[assignment]
+    last_drift: np.ndarray | None = field(default=None)
+    peer_mean_wealth: np.ndarray | None = field(default=None)
 
     @classmethod
     def initialize(cls, params: ModelParams, rng: np.random.Generator) -> "AgentState":

@@ -14,7 +14,7 @@ about the model's assumptions are welcome - that is how it improves.
 Requires Python 3.10+.
 
 ```bash
-git clone https://github.com/diet-krause/poverty-trap
+git clone https://github.com/dietkrause/poverty-trap
 cd poverty-trap
 python -m venv .venv && . .venv/Scripts/activate   # Windows
 pip install -e ".[dev,viz]"

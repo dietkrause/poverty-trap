@@ -10,11 +10,17 @@ from simulation.core.config import ModelParams
 
 def test_classify_maps_to_five_bands() -> None:
     p = ModelParams()
-    w = np.array([0.0, 0.1, 0.3, 0.5, 0.8, 1.0])
-    b = classify(w, p)
-    assert b[0] == Band.POBREZA
-    assert b[2] == Band.VULNERABLE     # between poverty_line and band_vulnerable
-    assert b[-1] == Band.RICO
+    # One representative wealth in each band, derived from the (calibrated) cutoffs
+    # so the test stays valid if the bands are recalibrated.
+    mids = np.array([
+        (p.ruin + p.poverty_line) / 2,            # pobreza
+        (p.poverty_line + p.band_vulnerable) / 2,  # vulnerable
+        (p.band_vulnerable + p.band_acomodado) / 2,  # media
+        (p.band_acomodado + p.rich_threshold) / 2,   # acomodado
+        p.rich_threshold + 0.1,                    # rico
+    ])
+    b = classify(mids, p)
+    assert b.tolist() == [Band.POBREZA, Band.VULNERABLE, Band.MEDIA, Band.ACOMODADO, Band.RICO]
     assert b.tolist() == sorted(b.tolist())
 
 

@@ -60,3 +60,4 @@ Plots need the optional viz extra: `pip install matplotlib`.
 |------------|-------------------------|
 | [`effort-marginal-impact/`](effort-marginal-impact/) | Does effort (value creation) always raise the probability of escape, by how much, and how does its impact vary with structural position? Is "always positive" a finding or an artifact of the efficiency floor? |
 | [`mobility-drivers/`](mobility-drivers/) | Across starting position, effort, regime, opportunity, and networks, which levers move the two mobility outcomes most, and does effort pay off equally under every regime? (Balanced full-factorial; auto-writes a neutral findings document.) |
+| [`calibration/`](calibration/) | Is the calibrated default model in a realistic regime? A validation card checks reaching-the-top is rare, IGE is in the Great Gatsby range, durable escape exceeds getting rich, and the distribution is bottom/middle-heavy. |

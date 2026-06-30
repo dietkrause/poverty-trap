@@ -21,8 +21,8 @@ def test_disabled_when_rate_zero() -> None:
 def test_conserves_total_wealth_and_lifts_one() -> None:
     p = ModelParams(n_agents=60, pool_rate=1.0, pool_size=6)
     s = AgentState.initialize(p, np.random.default_rng(0))
-    s.wealth[:] = 0.19  # below line; six of them sum past w*=1.0
+    s.wealth[:] = 0.04  # below the line; six of them sum past the poverty line
     total = s.wealth.sum()
     CollectivePooling().step(s, SimContext(params=p, rng=np.random.default_rng(0)))
     assert abs(s.wealth.sum() - total) < 1e-9          # conserved
-    assert s.wealth.max() >= p.rich_threshold          # someone crossed
+    assert s.wealth.max() >= p.poverty_line            # someone crossed the line

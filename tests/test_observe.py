@@ -12,7 +12,8 @@ from simulation.observe.stream import SnapshotEmitter
 
 def test_gini_bounds() -> None:
     assert gini(np.ones(100)) == 0.0
-    spike = np.zeros(100); spike[0] = 100.0
+    spike = np.zeros(100)
+    spike[0] = 100.0
     assert gini(spike) > 0.9
     assert gini(np.array([])) == 0.0
 

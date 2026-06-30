@@ -18,12 +18,13 @@ from ..core.state import AgentState
 
 
 class CollectivePooling:
-    """Below-line agents occasionally pool to send one member over the threshold.
+    """Below-line agents occasionally pool to send one member across the line.
 
     Each tick, with probability ``pool_rate``, eligible below-line agents are
-    grouped (size ``pool_size``); a group whose combined wealth reaches the rich
-    threshold lifts its wealthiest member to just above it, funded equally by the
-    others. Conserves total wealth; disabled when ``pool_rate`` is 0.
+    grouped (size ``pool_size``); a group whose combined wealth reaches the
+    poverty line lifts its wealthiest member just across it, funded equally by
+    the others (savings groups / cooperatives helping one member escape poverty).
+    Conserves total wealth; disabled when ``pool_rate`` is 0.
     """
 
     name = "pooling"
@@ -37,12 +38,17 @@ class CollectivePooling:
         if eligible.size < p.pool_size:
             return
         rng.shuffle(eligible)
+        events = 0
         for g in range(0, eligible.size - p.pool_size + 1, p.pool_size):
             grp = eligible[g:g + p.pool_size]
             total = float(np.sum(state.wealth[grp]))
-            if total >= p.rich_threshold:
+            if total >= line:
                 winner = grp[int(np.argmax(state.wealth[grp]))]
                 contributors = grp[grp != winner]
-                # Send the winner exactly across; split the remainder among the rest.
-                state.wealth[winner] = p.rich_threshold
-                state.wealth[contributors] = (total - p.rich_threshold) / contributors.size
+                # Send the winner just across the line; split the rest among the others.
+                state.wealth[winner] = line
+                state.wealth[contributors] = (total - line) / contributors.size
+                events += 1
+        if events:
+            # Publish for observers (so the UI can flash collective-escape events).
+            ctx.bus["pooling"] = {"events": events}
