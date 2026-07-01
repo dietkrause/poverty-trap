@@ -44,14 +44,15 @@ line-length = 100
 target-version = "py310"
 
 [tool.mypy]
-python_version = "3.10"
+# 3.12: NumPy 2.5+ stubs use PEP 695 `type` statements that mypy only parses under
+# python_version >= 3.12. Runtime support remains 3.10+ (verified by the pytest
+# matrix); this setting only governs type-checking syntax.
+python_version = "3.12"
 warn_unused_ignores = true
 disallow_untyped_defs = true
 
-# NumPy ships PEP 695 `type` statements in its stubs (2.5+), which mypy cannot
-# parse under python_version 3.10. Skip following numpy's stubs (treat as Any);
-# our own annotations are still checked. Also tolerate optional UI-server deps.
+# The UI server's imports (fastapi/uvicorn) are runtime-only deps of src/ux, not of
+# the engine package, so they may be absent in the type-checking environment.
 [[tool.mypy.overrides]]
-module = ["numpy", "numpy.*", "fastapi", "fastapi.*", "uvicorn", "uvicorn.*"]
-follow_imports = "skip"
+module = ["fastapi", "fastapi.*", "uvicorn", "uvicorn.*"]
 ignore_missing_imports = true
