@@ -1,25 +1,15 @@
 # poverty-trap
 
-An agent-based simulation engine for the dynamics of poverty traps: how
-structure, effort, opportunity, social networks, and inheritance combine to
-decide who escapes poverty and who does not.
+An agent-based simulation engine for the dynamics of poverty traps: a model of how
+starting position, effort, opportunity, social networks, and inheritance interact
+to determine whether an agent leaves poverty.
 
-It started as a one-minute video ("are poor people poor because they want to
-be?") and grew, with a lot of thoughtful audience feedback, into a proper,
-extensible model grounded in published research.
-
-## The thesis (two truths at once)
-
-1. **The trap is real.** Where you are born sets your starting point and the
-   direction you drift. Shocks hit the poor harder, and below a critical
-   threshold you slide down rather than up.
-2. **Effort is the lever you control, and it has non-linear leverage** - but it
-   is not a guarantee, and it does not erase structure. The model keeps both
-   truths honest, and (per the audience) separates *leaving poverty* from
-   *becoming rich*: two different events with two different probabilities.
-
-The full model, math, and the analysis of the community feedback that shaped it
-are in **[`docs/README.md`](docs/README.md)**.
+The model reports two distinct mobility outcomes rather than a single "success
+rate" — *leaving poverty* (crossing the poverty line) and *becoming rich*
+(reaching the upper threshold) — and is calibrated so that reaching the top is a
+rare tail event (see [Status](#status)). The full specification and mathematics
+are in **[`docs/README.md`](docs/README.md)**; the supporting literature is in
+**[`docs/literature/`](docs/literature/)**.
 
 ## Install
 
@@ -111,8 +101,9 @@ mobility events**, not one "success rate".
 - **`left_poverty`** - probability a life *ever* crossed the poverty line `w_p`
   (`poverty_line`, default `0.10`) upward at least once. This is the most
   generous "escaped" event (first passage, possibly transient), which is why
-  `left_poverty` >= `time_above_line` >= `became_rich`. Separating these answers
-  the #1 audience critique: *leaving poverty is not the same as getting rich.*
+  `left_poverty` >= `time_above_line` >= `became_rich`. Reporting these as separate
+  events reflects that leaving poverty and becoming rich are distinct outcomes with
+  distinct probabilities.
 - **`attempts`** - how many lives resolved in that group over the run (more ticks
   -> more attempts -> tighter probability estimates).
 - **`ige`** - intergenerational elasticity: the slope of `log(child wealth)` vs
@@ -178,8 +169,8 @@ poverty-trap run --effort 0.5 --seed 0 --no-network        # remove networks
 # the drop in mobility.poor is that mechanism's contribution
 ```
 
-**Compare policy regimes on the *same* agents** (the honest country comparison -
-identical seed, different structural dials):
+**Compare policy regimes on the *same* agents** (identical seed, different
+structural parameters, so any difference is attributable to the regime):
 
 ```bash
 poverty-trap regime --name harsh      --effort 0.5 --seed 0
@@ -227,9 +218,9 @@ plus `lifespan_ticks` (how long before an unresolved life ages out) and
 default live in `src/simulation/core/config.py` and are documented in
 `docs/README.md` section 7.
 
-### 5. Let the simulation adjudicate (experiments)
+### 5. Run controlled experiments
 
-For questions that deserve a controlled answer over many seeds, use the
+For questions that need a controlled answer over many seeds, use the
 [`experiments/`](experiments/) framework instead of a single run - it sweeps a
 variable, averages over seeds, and writes a `summary.json` plus a plot:
 
@@ -288,8 +279,9 @@ re-streams live. More detail in [`src/ux/README.md`](src/ux/README.md).
 
 ## Documentation
 
-- [`docs/README.md`](docs/README.md) - the model: thesis, full math (sections
-  7.1-7.13), the interface plan, and the roadmap.
+- [`docs/README.md`](docs/README.md) - the model specification: the full
+  mathematics (sections 7.1-7.13), the design rationale, and the visualization
+  plan.
 - [`docs/design/architecture.md`](docs/design/architecture.md) - how the engine
   works and how to extend it.
 - [`docs/literature/`](docs/literature/) - the research the model rests on, with
@@ -298,37 +290,32 @@ re-streams live. More detail in [`src/ux/README.md`](src/ux/README.md).
 
 ## Experiments
 
-The [`experiments/`](experiments/) folder is where the simulation **adjudicates**
-questions instead of where we assert answers. Each experiment is a self-contained
-subfolder that sweeps a variable, averages over seeds, and reports what the model
-produces. The first one,
-[`effort-marginal-impact/`](experiments/effort-marginal-impact/), measures
-whether effort (value creation) always raises the probability of escape, by how
+The [`experiments/`](experiments/) folder holds controlled studies: each is a
+self-contained subfolder that sweeps a variable, averages over seeds, and reports
+the model's output. [`effort-marginal-impact/`](experiments/effort-marginal-impact/)
+measures whether effort (value creation) raises the probability of escape, by how
 much, and how that impact varies with structural position - including a condition
 that removes the efficiency floor, so the "effort always helps" property is
-*measured*, not built in.
-
-```bash
-python experiments/effort-marginal-impact/run.py
-```
+*measured* rather than assumed. [`calibration/`](experiments/calibration/) checks
+the calibrated defaults against the target ranges in
+[`docs/literature/calibration.md`](docs/literature/calibration.md).
 
 ## Roadmap
 
-The model is built to grow one mechanism at a time. The next steps (each a
-self-contained extension) are the continuum/middle-class reporting, generational
-calibration to real mobility data, effort efficiency, talent-vs-luck, social
-networks, and policy regimes. Details in `docs/README.md` sections 4 and 8.
+Mechanisms are added one at a time as self-contained components. Planned
+extensions and the visualization plan are described in `docs/README.md`
+sections 4 and 8.
 
 ## Status
 
 Alpha. The defaults are **calibrated to a realistic regime** - reaching the top is
-a rare tail event (~5% of poor-born lives), intergenerational elasticity sits in
-the Great Gatsby range (IGE ~0.3-0.6), and the wealth distribution is
+a rare tail event (~5% of poor-born lives), the intergenerational elasticity sits
+in the Great Gatsby range (IGE ~0.3-0.6), and the wealth distribution is
 bottom/middle-heavy - but they are **not** fit to any specific country. The
 calibration is checked, with its targets and sources, in
 [`experiments/calibration/`](experiments/calibration/); re-run it after any
 parameter change. The `harsh`/`mixed`/`protective` regimes are illustrative
-contrasts, not real countries.
+contrasts, not models of real countries.
 
 ## Contributing
 
@@ -340,8 +327,3 @@ policy. Contributors are listed in [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
 ## License
 
 [MIT](LICENSE) (c) 2026 Dietmar Luther Krause Gutierrez.
-
-## Acknowledgements
-
-The v2 research agenda came largely from the community that engaged with the
-original video. Thank you - the analysis of that feedback is in `docs/README.md`.

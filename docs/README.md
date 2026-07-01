@@ -1,81 +1,82 @@
-# Poverty Trap v2 - Comment analysis and extension plan
+# Poverty-trap model: specification and design rationale
 
-Source: `comments.json` (live pull from the viral reel `DaBgEPZSJXy`, caption "El pobre
-es pobre porque quiere? Definitivamente no..."). 281 comments total, 190 with text read
-and analyzed, 567 reshares. This doc turns that feedback into a concrete plan to evolve
-the model toward reality and into a series of follow-up reels.
-
----
-
-## 1. What the comments actually said
-
-Sentiment was overwhelmingly positive and, more importantly, **substantive**. I ignored
-the pure-noise / bad-faith ones (a handful of political insults and "ML izquierdista",
-"resultado de escritorio", etc.) because they carry no model signal. The constructive
-feedback clusters into clear, repeated themes, ranked by how often they came up:
-
-| # | Theme (what people asked for) | Representative voices | Maps to |
-|---|-------------------------------|------------------------|---------|
-| 1 | **Binary is too crude: add a middle class / continuum.** "Escapar la pobreza" is NOT the same as "hacerse rico/millonario". | mangelesriq, erickhenriquezr, ivanosokohler, ricardo.quappe, eso._.po, mati_11.11, nicolas.addamo, charlescardenas | New: multi-band continuum |
-| 2 | **Generational transmission.** Inheritance of wealth, start point, financial education; "6-10 generations to escape" (OECD). | sierracisterna, diego.a.munoz.108, danibrauchi, tio_bodoni, zan.grey, juandenobo | Your idea #2 |
-| 3 | **Effort's conversion to value is itself constrained** by circumstances (sick kids, inherited debt, dysfunction, scarcity). | dres.dev, agv_1989, davo.amv, henochsnow, n.arratia.r, cangunejo | Your idea #1 |
-| 4 | **Effort is direction/strategy, not just hours.** Smart effort, vision, allocation beats raw quantity. | alfprieto7, ed.morales, javierdonosovi, juandenobo, rodrigoxile, sion.andrieux, nacho_rodriguez | Refines your "effort" |
-| 5 | **Collaboration / social networks / collective action / social capital.** | fabio.bozzolo, ravc2511, josebus1785, ppizarroj, karlosvc1212, scarlet_leinth | Your idea #4 |
-| 6 | **Access to opportunity, unequally distributed; country matters.** | carolinalina2030, luisg.rodriguez, trovadicto85, soulofwaves, comun_people, la.rous_fm | Your idea #6 |
-| 7 | **Talent / cognitive ability / skill as a variable.** | robertoaraya1, moglyman ("las capacidades cognitivas son aleatorias?"), ed.morales, cangunejo | Your idea #5 |
-| 8 | **Country / macro regime / welfare state (education, health, housing, redistribution).** | mastertebo, luigyalfred, scarlet_leinth, ppizarroj, rodrigoruizmardones, nf.toledo | Your idea #3 |
-| 9 | **Luck as an explicit force.** | christiancagg, ipromise1, panchaarrieta, curadoracurada, manuant_95 | New: explicit luck |
-| 10 | **Wealth concentration / the line moves / system needs inequality.** | rodrigoruizmardones, soulofwaves (Adam Smith), henochsnow, bernabe_torres | New: relative line / concentration |
-| 11 | **Validate / calibrate the model to real data.** | cristhianavila6, danibrauchi, leon_engymeer, eltiovito | New: calibration |
-| 12 | **Open-source the repo.** Dozens asked for the code/paper. | angelortizinnovations and ~30 others | Distribution, not model |
-
-Two clarity issues to fix in the narrative (people got confused):
-- "If at 0% effort 13% still escape, did they escape by luck?" -> **Yes.** The baseline
-  is luck-driven; make that explicit (ties to theme 9).
-- People read "escape = become rich". Decoupling "leave poverty" from "become rich"
-  (theme 1) removes most of the confusion.
+This document specifies the model: the mechanisms and their mathematics
+(section 7), the design rationale and the literature behind each assumption, the
+planned extensions (section 4), and the visualization plan (section 8). For the
+engineering map of the simulator see
+[`../src/simulation/README.md`](../src/simulation/README.md); for the evidence
+ledger that backs each assumption see
+[`literature/calibration.md`](literature/calibration.md).
 
 ---
 
-## 2. Validating your proposed approach (idea by idea)
+## 1. Design motivation: the mechanisms and the questions they address
 
-Your instinct is good and, encouragingly, it lines up with both the comments and the
-academic literature. Verdict on each, with how to make it rigorous:
+The model is organised around a set of mechanisms, each addressing a specific
+question about social mobility and each backed by published research (section 5
+and `literature/calibration.md`):
 
-### 2.1 A variable for "effort -> value" conversion efficiency  (VALID, high value)
+| # | Mechanism | Question it addresses |
+|---|-----------|------------------------|
+| 1 | Continuum of wealth bands | Leaving poverty is distinct from becoming rich; both are reported as separate probabilities, with a middle range between them. |
+| 2 | Generational transmission | Inheritance of wealth, starting position, and education across generations (intergenerational elasticity; generations-to-mean). |
+| 3 | Effort efficiency (scarcity tax) | The conversion of effort into value is constrained by circumstances (debt, stressors, scarcity). |
+| 4 | Effort quality / direction | Effort is allocation and skill, not only quantity of hours. |
+| 5 | Social networks / collective action | Economic connectedness and resource pooling affect mobility. |
+| 6 | Opportunity process | Access to opportunity is unequally distributed and heavy-tailed; the country matters. |
+| 7 | Talent as a variable | Talent (ability) as an endowment, distinct from realised outcomes. |
+| 8 | Regime hyperparameters | Country / policy settings: education, health, housing, redistribution. |
+| 9 | Explicit luck | Randomness as a first-class force in outcomes. |
+| 10 | Relative poverty line / concentration | The poverty line can rise with the society's median wealth. |
+| 11 | Calibration | The defaults are validated against published target ranges. |
+
+Two reporting choices follow directly:
+- The baseline (zero-effort) escape rate is driven by random shocks, and is
+  reported as luck rather than merit.
+- "Leaving poverty" and "becoming rich" are reported as two distinct
+  probabilities so the two outcomes are never conflated.
+
+---
+
+## 2. The mechanisms and their evidence (one by one)
+
+Each mechanism below states what it models, the published source that supports it,
+and how it is made measurable in the simulation.
+
+### 2.1 A variable for "effort -> value" conversion efficiency
 Model effort as having an **efficiency multiplier** eta in [0,1] that is degraded by
 adverse conditions. This is exactly the "scarcity tax": being poor consumes cognitive
 bandwidth, so the same effort yields less (Mani, Mullainathan, Shafir, Zhao, Science
 2013, "Poverty Impedes Cognitive Function"). Implement as a factor on the value-creation
 term, lower when wealth is below the poverty line or when stressors are active.
 
-### 2.2 Generational wealth and poverty transmission  (VALID, high value)
+### 2.2 Generational wealth and poverty transmission
 Standard and well-measured. Calibrate to the **intergenerational elasticity (IGE)** and
 the **Great Gatsby Curve** (Corak 2013), and to the OECD "generations to reach mean
 income" (OECD 2018, *A Broken Social Elevator?* - the "6 generations" stat a commenter
 cited). Child inherits a fraction of wealth, a correlated talent draw, the zone, and the
 network.
 
-### 2.3 Hyperparameters for country / family situation  (VALID)
+### 2.3 Hyperparameters for country / family situation
 Make a **regime config** Theta that rescales the premium, the drift spread, the
 opportunity rate and inequality, a welfare floor, public-education uplift, and
 redistribution. "Switch country" = swap Theta and re-run the SAME agents. This also
 answers the large welfare-state comment cluster (theme 8).
 
-### 2.4 Social network / collaboration  (VALID)
+### 2.4 Social network / collaboration
 Put agents on a graph. **Economic connectedness** predicts mobility (Chetty, Jackson et
 al., Nature 2022, "Social capital I & II"); weak ties open opportunities (Granovetter
 1973). Connections raise your opportunity arrival rate, help absorb shocks, and let
 agents **pool to cross the threshold collectively**.
 
-### 2.5 Talent/skill ~ Normal  (VALID assumption, with a twist)
-Yes, model the talent endowment as Normal. But the **key, counter-intuitive result you
-should feature**: even with normally distributed talent, outcomes become a power law and
-the most successful are rarely the most talented, because dynamics are multiplicative and
-opportunity/luck is heavy-tailed. This is exactly the Pluchino, Biondo, Rapisarda (2018)
-"Talent vs Luck" ABM. Great reel.
+### 2.5 Talent/skill ~ Normal
+Model the talent endowment as Normal. The **key, counter-intuitive result**: even
+with normally distributed talent, outcomes become a power law and the most
+successful are rarely the most talented, because the dynamics are multiplicative
+and opportunity/luck is heavy-tailed. This follows Pluchino, Biondo, Rapisarda
+(2018), "Talent vs Luck".
 
-### 2.6 Opportunity as a power-law abstraction  (VALID, the most sophisticated)
+### 2.6 Opportunity as a power-law abstraction
 Strong intuition and it is supported. Define an **opportunity** precisely (section 3.3):
 an arrival process whose payoffs are Pareto (power-law), with arrival rate correlated to
 environment and network. The "rich get richer" access is **preferential attachment**
@@ -98,7 +99,7 @@ generations, all tunable by a regime config.
 ### 3.1 Agent state
 Each agent i carries:
 - `w_i` wealth (assets),
-- `T_i` talent endowment, drawn `T_i ~ Normal(0, 1)` (your idea #5),
+- `T_i` talent endowment, drawn `T_i ~ Normal(0, 1)`,
 - `h_i` human capital / skill (accumulates from T_i, education, effort),
 - `z_i` zone / location (sets base drift, shock size, opportunity density - Chetty),
 - `e_i` effort magnitude in [0,1] (now heterogeneous across agents, not one global slider),
@@ -115,7 +116,7 @@ $$\mu_i \;=\; \underbrace{\mu_{\text{base}}(z_i,\,\Theta)}_{\text{neighborhood (
 \;+\; \underbrace{r\, w_i\, s_i}_{\text{returns on capital}}$$
 
 where:
-- `eta_i` in [0,1] = **effort-to-value efficiency** (your idea #1). Degraded by scarcity
+- `eta_i` in [0,1] = **effort-to-value efficiency**. Degraded by scarcity
   and stressors: `eta_i = g(stressors_i, w_i)`, lower below the poverty line (Mani 2013).
 - `q_i` = **effort quality / direction** (comments theme 4). A function of talent and
   skill `q_i = h(T_i, h_i)`; "smart effort" multiplies, "blind effort" does not.
@@ -129,7 +130,7 @@ Effort therefore enters as **magnitude x efficiency x direction** (`e * eta * q`
 directly answers "two people with the same effort get different results" and "effort is
 constrained by circumstances."
 
-### 3.3 Opportunity as a precise object (your idea #6)
+### 3.3 Opportunity as a precise object
 An **opportunity** is a discrete event, not a smooth drift. For agent i:
 - **Arrival**: a Poisson process with rate `lambda_i = lambda_0 * f(z_i, c_i, Theta)` -
   more in good zones and well-connected agents (preferential attachment).
@@ -143,7 +144,7 @@ So opportunity = **arrival (environment/network) x payoff (power law) x conversi
 variable and reproduces the Matthew effect. Even with Normal talent, the Pareto payoffs
 make wealth heavy-tailed (the Talent-vs-Luck result).
 
-### 3.4 Network / collaboration (your idea #4)
+### 3.4 Network / collaboration
 Agents sit on a graph with homophily (poor tend to connect to poor - Schelling-style),
 so segregation emerges. Edges do three things: raise `lambda_i` (opportunity access),
 raise `eta_i` (a friend helps absorb a shock, fewer ruinous events), and enable
@@ -151,7 +152,7 @@ raise `eta_i` (a friend helps absorb a shock, fewer ruinous events), and enable
 modeling cooperatives / juntas / family support (comments theme 5). Connectedness `c_i`
 is the share of your ties that are above the line (Chetty's "economic connectedness").
 
-### 3.5 Generational transmission (your idea #2)
+### 3.5 Generational transmission
 At death, the child starts with:
 - wealth `w_child = b * w_parent + epsilon` (inheritance fraction b),
 - talent `T_child = rho * T_parent + sqrt(1-rho^2) * noise` (heritability rho),
@@ -162,7 +163,7 @@ Calibrate `b, rho` so the simulated IGE matches the Great Gatsby Curve and the O
 "generations to mean income." This lets you show the trap **persisting across
 generations**, and answer "how many generations to escape?" with a number.
 
-### 3.6 Regime hyperparameters (your idea #3)
+### 3.6 Regime hyperparameters
 A config `Theta` you swap to "change country/policy":
 - premium scale (how punishing poverty is),
 - opportunity rate `lambda_0` and inequality exponent `a` (how concentrated access is),
@@ -171,49 +172,49 @@ A config `Theta` you swap to "change country/policy":
 - **redistribution** (taxes high `w`, lifts the floor and the poor's `mu_base`),
 - threshold height and a **relative poverty line** that rises with median wealth.
 
-"Run the SAME 100 people under Chile vs Denmark vs USA" is a killer reel and answers the
-entire policy/structural comment cluster honestly (it does not take a political side; it
-shows the mechanism).
+Running the *same* agents under different regime settings (welfare floor,
+education, redistribution) isolates the effect of policy from luck: the seed is
+fixed, so any difference in outcomes is attributable to the regime rather than
+chance. This is a mechanism demonstration, not a political claim.
 
-### 3.7 The continuum (the #1 requested fix)
+### 3.7 The continuum
 Drop pure binary. Define wealth bands (pobreza, vulnerable, clase media, acomodado, rico)
 and report **two different probabilities**: P(cross the poverty line) and P(reach the
-rich attractor). "Salir de la pobreza" and "hacerse rico" become distinct events - which
-is exactly the distinction dozens of commenters demanded.
+rich attractor). "Salir de la pobreza" and "hacerse rico" are modelled as distinct
+events with distinct probabilities.
 
 ---
 
-## 4. Roadmap: turn this into a series (ordered by impact / effort)
+## 4. Planned extensions (ordered by impact and effort)
 
-Each phase is a self-contained follow-up reel. Order chosen so the earliest ones are the
-highest-demand and lowest-effort.
+Each phase is a self-contained extension. The order places the highest-impact,
+lowest-effort mechanisms first.
 
-**Phase 0 - Open-source the repo (do this now).** Dozens asked. Publish v1 + a clean
-README, link in bio. Free reach, credibility, and it seeds every later video.
+**Phase 0 - Open-source the repo.** Publish the code with a clean README.
 
-**Phase 1 - The continuum + "escape poverty != become rich".** Answers the most common
-critique and the "did they escape by luck?" confusion. Low effort, high payoff. Reel:
-"Ustedes tenian razon: no es binario." Show P(leave poverty) vs P(get rich) separately.
+**Phase 1 - The continuum ("leaving poverty" != "becoming rich").** Report
+P(leave poverty) and P(become rich) as separate probabilities, with a middle
+range between them.
 
-**Phase 2 - Generational transmission.** Watch the trap survive across generations;
-calibrate to "6 generations" (OECD). Very shareable, emotionally strong.
+**Phase 2 - Generational transmission.** Track the trap across generations;
+calibrate to the OECD "generations to reach mean income" figure.
 
-**Phase 3 - Effort = magnitude x efficiency x direction.** The scarcity tax (Mani 2013)
-and smart-vs-blind effort. Answers "effort is constrained" and "smart effort beats hours."
+**Phase 3 - Effort = magnitude x efficiency x direction.** The scarcity tax
+(Mani 2013) and effort quality vs quantity, addressing "effort is constrained"
+and "direction beats hours".
 
-**Phase 4 - Talent (normal) vs Luck/Opportunity (power law).** The Pluchino result: the
-most successful are rarely the most talented. Biggest "wow" reel of the series.
+**Phase 4 - Talent (Normal) vs luck/opportunity (power law).** The Pluchino
+(2018) result: the most successful are rarely the most talented.
 
-**Phase 5 - Social capital / networks.** "Moving to a connected neighborhood opens doors"
-(Chetty social capital). Pooling/cooperatives cross the threshold together.
+**Phase 5 - Social capital / networks.** Economic connectedness (Chetty) and
+pooling/cooperatives that cross the threshold collectively.
 
-**Phase 6 - Country / policy regimes.** Same agents, different Theta: welfare floor,
-public education, redistribution. The honest, non-partisan "what actually moves the
-curve" video.
+**Phase 6 - Country / policy regimes.** The same agents under different Theta:
+welfare floor, public education, redistribution - a descriptive comparison of
+what the regime settings change, not a policy recommendation.
 
-**Cross-cutting - Calibration & validation.** Tune to IGE / Great Gatsby / OECD; publish a
-sensitivity analysis. This is your shield against "resultado de escritorio" and a
-credibility flex.
+**Cross-cutting - Calibration and validation.** Tune to IGE / Great Gatsby / OECD
+targets and publish a sensitivity analysis (see `experiments/calibration/`).
 
 ---
 
@@ -240,19 +241,21 @@ credibility flex.
 
 ---
 
-## 6. One-line answers you can paste in comments
+## 6. Frequently asked questions
 
-- "Como calculas el umbral?" -> es el equilibrio inestable del sistema (donde tu cambio
-  esperado pasa de negativo a positivo); ver el reel de seguimiento.
-- "Y la clase media?" -> tenian razon, en v2 separo 'salir de la pobreza' de 'hacerse
-  rico': son dos probabilidades distintas.
-- "Y el esfuerzo si tenes hijos enfermos / mil problemas?" -> v2 agrega una eficiencia del
-  esfuerzo que la pobreza degrada (el 'impuesto cognitivo' de la escasez, Mani 2013).
-- "Y las oportunidades / la suerte?" -> v2 las modela como un proceso de llegada con pagos
-  de cola pesada (power law); con talento normal, el resultado igual se vuelve power law.
-- "Y el pais / las politicas?" -> v2 tiene un set de hiperparametros de regimen: corro las
-  MISMAS personas bajo distintos paises.
-- "Opensource?" -> si, va el repo (Fase 0).
+- **How is the threshold computed?** It is the unstable equilibrium of the system
+  (the wealth level at which the expected change turns from negative to positive).
+- **What about the middle class?** The model separates "leaving poverty" from
+  "becoming rich" and reports a continuum of bands between them.
+- **What about effort under adverse circumstances (illness, multiple problems)?**
+  Effort passes through an efficiency factor that poverty and stressors degrade
+  (the cognitive cost of scarcity; Mani 2013).
+- **What about opportunity and luck?** Modelled as an arrival process with
+  heavy-tailed (power-law) payoffs; with Normal talent the outcome distribution
+  still becomes a power law.
+- **What about the country / policy?** A set of regime hyperparameters runs the
+  same agents under different structural settings.
+- **Is it open source?** Yes.
 
 ---
 
@@ -267,10 +270,11 @@ comments demanded, organized around four questions about each agent:
 - what hits you: random shocks, stressors $St_i$, and opportunities;
 - what you pass on: wealth, talent and place handed to your children.
 
-Crucially, all of it funnels into the same single quantity as v1: the drift $\mu_i$, the
-expected push on your wealth this period. The new terms just make that push richer and more
-honest, and a regime dial $\Theta$ (your country / policy) rescales the structural pieces.
-Read section 7.4 first if you want the punchline; the rest defines its pieces.
+All of it funnels into the same single quantity as v1: the drift $\mu_i$, the
+expected change in wealth this period. The additional terms make that push more
+detailed, and a regime dial $\Theta$ (the country / policy setting) rescales the
+structural pieces. Section 7.4 states the assembled drift; the rest defines its
+pieces.
 
 ### 7.1 State vector
 In v1 a person was a single number. Now a person is a small profile:
@@ -310,7 +314,7 @@ skill passes $h_{1/2}$ it climbs toward $1$. Read $s_i$: the indicator says you 
 save above subsistence $w_{\text{sub}}$, and skill or financial literacy raises the share.
 So effort now has a magnitude $e_i$, an efficiency $\eta_i$, and a direction $(q_i, s_i)$.
 
-### 7.4 The drift, fully specified (the heart)
+### 7.4 The drift, fully specified
 This is where everything meets. Each period your wealth gets an expected push $\mu_i$; v1
 had three terms, v2 has five:
 
@@ -368,10 +372,10 @@ friend helps you absorb a shock before it ruins you). Connections also let peopl
 group $C$ can combine resources to cross the threshold once when
 $\sum_{j\in C} w_j \ge w^{*}$, modeling collective escape.
 
-### 7.7 Talent (Normal) becomes outcome (power law) (idea #5, the twist)
-You assumed talent is normally distributed, which is correct and standard. The beautiful,
-counter-intuitive part (and a perfect reel) is that normal talent still produces wildly
-unequal, power-law outcomes. The reason is that wealth grows multiplicatively (the
+### 7.7 Talent (Normal) becomes outcome (power law)
+Talent is modelled as normally distributed, which is standard. The
+counter-intuitive result is that normal talent still produces highly unequal,
+power-law outcomes. The reason is that wealth grows multiplicatively (the
 $r\, w_i\, s_i$ term plus multiplicative opportunity jumps), so each period's wealth is
 roughly the previous one times a random factor, plus a shock:
 
@@ -417,8 +421,8 @@ all the same model with different structural dials. $\Theta$ is the dial set; sw
 Presets (Chile / Denmark / USA) are just named $\Theta$ vectors run on the same random
 seed, so any difference you see on screen is the policy, not the luck.
 
-### 7.10 The continuum (the #1 requested fix)
-The loudest critique: escaping poverty is not the same as becoming rich, and there is a
+### 7.10 The continuum
+Escaping poverty is not the same as becoming rich, and there is a
 middle class in between. So we replace the single wall with a ladder of bands and report two
 different probabilities. Ordered cutoffs $0 < w_p < w_m < w_a < w^{*}$ define the bands
 {pobreza, vulnerable, media, acomodado, rico}, and we track $\Pr(\text{cross } w_p)$ (leave
@@ -472,16 +476,16 @@ distances.
 
 ---
 
-## 8. Interface plan: make the sim show v2
+## 8. Visualization plan
 
-The v1 window (two zones, dots parking top/bottom, a rate HUD, a wealth-gap graph) proved
-the core point but can only display one idea. v2 needs a layered, config-driven renderer so
-each follow-up reel switches on exactly the overlays it needs, on the same 9:16 canvas.
+The visualization is a layered, config-driven renderer: each view enables exactly
+the overlays it needs. Much of this plan is implemented in the live dashboard
+(`src/ux/`); this section documents the intended design.
 
 ### 8.1 Architecture refactor (do this first; it unblocks every phase)
 - Layered renderer. Split drawing into toggleable layers: bands, agents, network,
-  opportunities, lineage, hud, panel. A config dict decides which are on; each reel = a
-  layer preset.
+  opportunities, lineage, hud, panel. A config dict decides which are on; each view
+  is a layer preset.
 - Deterministic seed + replay. Store the RNG seed so you can re-run the SAME agents under a
   different regime $\Theta$ (essential for the country comparison and before/after wipes).
 - Record mode. A flag that pins FPS, hides debug text, optionally dumps frames.
@@ -502,17 +506,16 @@ each follow-up reel switches on exactly the overlays it needs, on the same 9:16 
 | Talent vs Luck (Phase 4) | side scatter panel: talent (x) vs final wealth (y), weak correlation; highlight top-wealth = mid-talent + lucky | toggle to color by "luck captured" |
 | Regime / country (Phase 6) | literal floor line (welfare) catching falling dots; preset buttons (Chile/Denmark/USA) that replay the same seed; before/after wipe (9:16 too narrow for side-by-side) | preset bar + the two continuum counters live |
 
-### 8.3 Layout for the reel format (9:16)
+### 8.3 Layout (vertical 9:16 canvas)
 - Top ~6%: HUD (regime name, the two counters).
 - Middle ~62%: the banded simulation field (agents, network, opportunities, lineage).
 - Bottom ~32%: a swappable panel slot holding the phase-specific chart (effort histogram,
   opportunity power law, talent-vs-luck scatter, or wealth-gap-over-time).
 - Controls overlaid bottom-left, hidden in record mode.
 
-### 8.4 Build order for the UI (mirrors the reel roadmap)
+### 8.4 Build order for the UI
 1. Refactor to layers + seed/replay + headless metrics (8.1). One-time cost, enables all.
-2. Bands + two counters (Phase 1). Smallest change, biggest clarity win; answers the #1
-   comment.
+2. Bands + two counters (Phase 1). Smallest change, largest clarity gain.
 3. Effort distribution + $\eta$ opacity (Phase 3). Makes "same effort, different result"
    literally visible.
 4. Lineage threads + generations counter (Phase 2).

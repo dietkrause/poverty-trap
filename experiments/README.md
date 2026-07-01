@@ -1,11 +1,10 @@
 # Experiments
 
-This folder is where the simulation **adjudicates** questions instead of us
-asserting answers. Each experiment is a self-contained subfolder that runs the
-engine under controlled conditions and reports what comes out - so a claim about
-social dynamics becomes a measured result, not a design choice.
+This folder holds controlled studies that run the engine under fixed conditions
+and report its output, so a statement about the model's behaviour is a measured
+result rather than an assertion. Each experiment is a self-contained subfolder.
 
-## The epistemology (read this first)
+## Interpretation (read this first)
 
 An agent-based model does not prove a social fact directly. It demonstrates the
 **logical consequences of micro-rules**. So every experiment here answers a

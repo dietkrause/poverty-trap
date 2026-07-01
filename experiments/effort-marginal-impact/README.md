@@ -7,10 +7,10 @@ of escaping poverty, by how much, and how does that impact vary with structural
 position? And is the "effort always helps" property a genuine finding of the
 model, or an artifact of one calibration choice (the effort-efficiency floor)?
 
-This is deliberately framed so the **simulation adjudicates**. We measure; we do
-not assert.
+This is deliberately framed as a measurement: the experiment reports what the
+model produces; it does not assume the answer.
 
-## Why this is honest, not circular
+## Why this is not circular
 
 In the value-creation drift term `alpha * e * eta(w, St) * q(h)`, the marginal
 impact of effort is `alpha * eta * q`. That is strictly positive *only while* the
