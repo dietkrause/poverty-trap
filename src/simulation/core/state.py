@@ -65,7 +65,7 @@ class AgentState:
         talent = rng.standard_normal(n)
         # Skill in [0, 1], nudged up by talent and by being in the rich zone.
         skill = np.clip(0.5 + 0.15 * talent + np.where(poor, -0.1, 0.1), 0.05, 0.95)
-        effort = np.zeros(n, dtype=np.float64)          # set by an effort policy
+        effort: np.ndarray = np.zeros(n, dtype=np.float64)  # set by an effort policy
         stressors = rng.exponential(1.0, n) * np.where(poor, 1.0, 0.3)
         connectedness = np.where(poor, 0.1, 0.7).astype(np.float64)
 

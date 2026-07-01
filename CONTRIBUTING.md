@@ -25,7 +25,7 @@ Run the checks:
 ```bash
 pytest            # tests
 ruff check src    # lint
-mypy src          # types
+mypy src/simulation  # types
 ```
 
 All three must pass before a PR is merged.

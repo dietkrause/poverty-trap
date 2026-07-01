@@ -99,7 +99,7 @@ class Simulation:
         ctx.bus.clear()
 
         # 1-2. Accumulate drift and noise without mutating wealth mid-sum.
-        mu = np.zeros(state.n, dtype=np.float64)
+        mu: np.ndarray = np.zeros(state.n, dtype=np.float64)
         for term in self.drift_terms:
             mu += term.drift(state, ctx)
         state.last_drift = mu
