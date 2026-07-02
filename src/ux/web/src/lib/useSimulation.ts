@@ -17,9 +17,13 @@ export type ZoneStat = {
   q: number;
   savings: number;
   conn: number;
+  stressors: number;
+  generation: number;
   above_line: number;
   above_rich: number;
 };
+
+export type DriftTerms = Record<string, number>;
 
 export type Mobility = {
   birth_policy: string;
@@ -52,8 +56,10 @@ export type Snapshot = {
     generation: number[];
   };
   zones: { poor: ZoneStat; rich: ZoneStat };
+  drift: { poor: DriftTerms; rich: DriftTerms };
   opportunity: { arrived: number; captured: number; captured_value: number; payoffs: number[] };
   pooling: { events: number };
+  noise: { sigma_poor: number; sigma_rich: number };
   mobility?: Mobility;
   controls?: Partial<Controls>;
 };

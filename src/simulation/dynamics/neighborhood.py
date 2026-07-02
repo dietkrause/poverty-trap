@@ -11,8 +11,9 @@ from ..core.state import AgentState
 class NeighborhoodDrift:
     """The structural base drift set by the agent's zone.
 
-    The poor zone has a negative base drift (without effort you slide toward
-    ruin); the rich zone has a positive one. This is the simplest, most direct
+    Both zones carry a negative base drift (a cost-of-living drag toward ruin) in
+    the calibrated baseline; the poor zone's is larger, so the neighbourhood
+    advantage is *relative*, not a guaranteed climb. This is the most direct
     encoding of the geography-of-opportunity result: the neighbourhood, not the
     person, sets the baseline rate of change.
     """

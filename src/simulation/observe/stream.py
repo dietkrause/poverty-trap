@@ -40,10 +40,15 @@ class SnapshotEmitter:
     """Calls ``sink(snapshot)`` every ``every`` ticks with a compact, rich view."""
 
     def __init__(self, sink: Callable[[dict], None], every: int = 15,
-                 max_agents: int = 240, payoff_reservoir: int = 160) -> None:
+                 max_agents: int = 240, payoff_reservoir: int = 160,
+                 drift_terms: list | None = None) -> None:
         self.sink = sink
         self.every = max(int(every), 1)
         self.max_agents = max_agents
+        # The exact drift terms the engine is running, so the visualised drift
+        # decomposition reflects only the *active* forces (e.g. no network term
+        # when the network is off). Read-only: only their .drift() is called.
+        self.drift_terms = list(drift_terms or [])
         # Cross-tick accumulators for discrete events (the bus is cleared each tick).
         self._opp_arrived = 0
         self._opp_captured = 0
@@ -78,10 +83,17 @@ class SnapshotEmitter:
         poor = state.zone == 0
         rich = ~poor
 
+        # Drift decomposition (spec 7.4): the per-term contribution to mu, averaged
+        # by zone, for exactly the terms the engine is running (the noise term is
+        # mean-zero so it is not part of the expected drift).
+        drift_terms = {getattr(t, "name", type(t).__name__): t.drift(state, ctx)
+                       for t in self.drift_terms}
+
         def zone_stats(mask: np.ndarray) -> dict:
             if not np.any(mask):
-                return {"count": 0, "wealth": 0.0, "eta": 0.0, "q": 0.0,
-                        "savings": 0.0, "conn": 0.0, "above_line": 0.0, "above_rich": 0.0}
+                return {"count": 0, "wealth": 0.0, "eta": 0.0, "q": 0.0, "savings": 0.0,
+                        "conn": 0.0, "stressors": 0.0, "generation": 0.0,
+                        "above_line": 0.0, "above_rich": 0.0}
             w = state.wealth[mask]
             return {
                 "count": int(mask.sum()),
@@ -90,9 +102,18 @@ class SnapshotEmitter:
                 "q": round(float(q[mask].mean()), 4),
                 "savings": round(float(s[mask].mean()), 4),
                 "conn": round(float(state.connectedness[mask].mean()), 4),
+                "stressors": round(float(state.stressors[mask].mean()), 3),
+                "generation": round(float(state.generation[mask].mean()), 2),
                 "above_line": round(float(np.mean(w >= p.poverty_line)), 4),
                 "above_rich": round(float(np.mean(w >= p.rich_threshold)), 4),
             }
+
+        def drift_by_zone(mask: np.ndarray) -> dict:
+            if not np.any(mask) or not drift_terms:
+                return {}
+            d = {name: round(float(arr[mask].mean()), 5) for name, arr in drift_terms.items()}
+            d["total"] = round(float(sum(d.values())), 5)
+            return d
 
         # Subsample agents for the field / scatter (keeps the payload small).
         step = max(1, n // self.max_agents)
@@ -123,6 +144,7 @@ class SnapshotEmitter:
                 "generation": state.generation[idx].tolist(),
             },
             "zones": {"poor": zone_stats(poor), "rich": zone_stats(rich)},
+            "drift": {"poor": drift_by_zone(poor), "rich": drift_by_zone(rich)},
             "opportunity": {
                 "arrived": self._opp_arrived,
                 "captured": self._opp_captured,
@@ -130,5 +152,6 @@ class SnapshotEmitter:
                 "payoffs": [round(x, 4) for x in self._payoffs],
             },
             "pooling": {"events": self._pool_events},
+            "noise": {"sigma_poor": round(p.sigma_poor, 3), "sigma_rich": round(p.sigma_rich, 3)},
         }
         self.sink(snap)

@@ -33,10 +33,20 @@ export function EffortPanel({ snap }: { snap: Snapshot | null }) {
           <Meter label="ahorro s" value={r?.savings ?? 0} color="#bcbcbc" />
         </div>
       </div>
+      <div className="mt-3 grid grid-cols-2 gap-4 text-[11px]">
+        <div className="flex justify-between text-zinc-500">
+          <span>estresores (St)</span>
+          <span className="tabular-nums text-zinc-300">{(p?.stressors ?? 0).toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between text-zinc-500">
+          <span>estresores (St)</span>
+          <span className="tabular-nums text-zinc-300">{(r?.stressors ?? 0).toFixed(2)}</span>
+        </div>
+      </div>
       <p className="mt-3 text-[11px] leading-snug text-zinc-500">
         eta y q multiplican el esfuerzo e antes de convertirse en valor. eta decrece con la
-        cercania a la linea de pobreza y con los estresores (calibracion: Mani 2013), por lo
-        que un mismo e produce distinto valor segun la posicion del agente.
+        cercania a la linea de pobreza y con los estresores St (calibracion: Mani 2013), por
+        lo que un mismo e produce distinto valor segun la posicion del agente.
       </p>
     </Card>
   );

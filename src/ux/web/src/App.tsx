@@ -9,6 +9,7 @@ import { InequalityPanel } from "./components/InequalityPanel";
 import { OpportunityPanel } from "./components/OpportunityPanel";
 import { NetworkPanel } from "./components/NetworkPanel";
 import { TalentLuck } from "./components/TalentLuck";
+import { DriftPanel } from "./components/DriftPanel";
 import { Card } from "./components/ui";
 
 const REGIMES = ["baseline", "harsh", "mixed", "protective"];
@@ -59,6 +60,7 @@ export default function App() {
 
         {/* Dynamics grid */}
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <DriftPanel snap={snap} />
           <EffortPanel snap={snap} />
           <InequalityPanel snap={snap} history={history} />
           <OpportunityPanel snap={snap} />
@@ -66,6 +68,7 @@ export default function App() {
           <TalentLuck snap={snap} />
           <Card title="Referencia de variables" subtitle="que representa cada panel">
             <ul className="space-y-2 text-[12px] leading-snug text-zinc-400">
+              <li><b className="text-orange-300">Deriva (&mu;):</b> empuje esperado sobre la riqueza cada tick, descompuesto en sus terminos (barrio, prima, valor, capital, red, pares) — el mecanismo 7.4.</li>
               <li><b className="text-emerald-400">Movilidad:</b> tres niveles para nacidos pobres — cruzar la linea (alguna vez), tiempo de vida fuera de la pobreza (durable) y alcanzar el umbral de riqueza.</li>
               <li><b className="text-rose-400">Eficiencia (&eta;):</b> factor en [&eta;_min, 1] que multiplica el valor creado; depende de la riqueza relativa a la linea y de los estresores.</li>
               <li><b className="text-amber-400">Capital (r·w·s):</b> termino de deriva proporcional a la riqueza ya acumulada.</li>

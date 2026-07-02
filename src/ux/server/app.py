@@ -71,7 +71,7 @@ async def ws(socket: WebSocket) -> None:
     ctrl = {"effort": 0.5, "regime": "baseline"}
     frames: list[dict] = []
     sim = build(ctrl)
-    sim.observers.append(SnapshotEmitter(sink=frames.append, every=15))
+    sim.observers.append(SnapshotEmitter(sink=frames.append, every=15, drift_terms=sim.drift_terms))
     monitor = find_monitor(sim)
     try:
         while True:
@@ -80,7 +80,7 @@ async def ws(socket: WebSocket) -> None:
                 msg = await asyncio.wait_for(socket.receive_text(), timeout=0.001)
                 ctrl.update(json.loads(msg))
                 sim = build(ctrl)
-                sim.observers.append(SnapshotEmitter(sink=frames.append, every=15))
+                sim.observers.append(SnapshotEmitter(sink=frames.append, every=15, drift_terms=sim.drift_terms))
                 monitor = find_monitor(sim)
                 frames.clear()
             except (asyncio.TimeoutError, json.JSONDecodeError):

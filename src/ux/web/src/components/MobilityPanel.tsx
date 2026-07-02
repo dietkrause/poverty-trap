@@ -76,8 +76,9 @@ export function MobilityPanel({ snap }: { snap: Snapshot | null }) {
           <div className="text-[11px] text-zinc-600">elasticidad intergeneracional</div>
         </div>
       </div>
-      <div className="mt-2 text-[11px] text-zinc-600">
-        intentos: {poor?.attempts ?? 0} pobres / {rich?.attempts ?? 0} ricos
+      <div className="mt-2 flex justify-between text-[11px] text-zinc-600">
+        <span>intentos: {poor?.attempts ?? 0} pobres / {rich?.attempts ?? 0} ricos</span>
+        <span>generacion media: {(snap?.zones.poor.generation ?? 0).toFixed(1)}</span>
       </div>
     </Card>
   );
