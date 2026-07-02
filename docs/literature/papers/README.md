@@ -1,13 +1,21 @@
 # Papers
 
-Two things live here:
+What is tracked here (in version control):
 
-1. **Notes** - one Markdown file per reference: an original summary (citation,
-   links, what it says in our words, and how the model uses it). Committed,
-   because they are our own writing.
-2. **Full text** - generated locally from the PDFs into the git-ignored
-   `fulltext/` folder (workflow below). The full text of copyrighted papers is
-   **not** committed; doing so in a public repo would infringe.
+1. **[`INDEX.md`](INDEX.md)** - the list of every referenced paper (citation +
+   a link to a free source), grouped by the assumption it backs.
+2. **The fetch/convert scripts** (`fetch_papers.py`, `convert_papers.py`) and this
+   README.
+
+What is **not** tracked (git-ignored):
+
+- **The PDFs** (`*.pdf`) - copyrighted publisher/author works; redistributing them
+  in a public repo would infringe.
+- **Full-text conversions** (`fulltext/*.md`) - generated locally from the PDFs;
+  they are the papers' text, so the same copyright applies.
+
+Download and convert them locally with the workflow below; the numbers taken from
+each paper are recorded in [`../calibration.md`](../calibration.md).
 
 ## Getting the full papers as Markdown (local workflow)
 
