@@ -7,7 +7,7 @@ implementation deliberately differs from or defers a part of the spec. The goal
 is that a reader can confirm the simulation is a faithful, formal representation
 of the stated assumptions - not a black box.
 
-Reviewed against commit state of `src/simulation/`. Status: **[exact]** code is
+Reviewed against the current `src/simulation/` (calibrated defaults). Status: **[exact]** code is
 the literal equation; **[approx]** a documented numerical approximation;
 **[deferred]** specified in the model but not yet implemented.
 
@@ -83,8 +83,11 @@ single row-normalised matrix-vector product $c = W\,\mathbf{1}[w>w_p]$. **[exact
 
 **[exact]** *Pooling*: `population/pooling.py::CollectivePooling` lets below-line
 agents combine resources (size `pool_size`, rate `pool_rate`) so a group whose
-summed wealth reaches `w*` pushes one member across, conserving total wealth.
-Peer interaction is `population/network.py::PeerInfluence`: drift
+summed wealth reaches the **poverty line** pushes one member just across it,
+conserving total wealth. (Earlier versions targeted `w*`; at the calibrated scale
+that is unreachable by pooling below-line agents, so the target is the line -
+collective escape from poverty, not collective enrichment.) Peer interaction is
+`population/network.py::PeerInfluence`: drift
 `gamma_peer * tanh(neighbour_mean_wealth - w)` (social multiplier).
 
 ## 7. Talent -> power-law tail (spec 7.7)
@@ -103,7 +106,7 @@ final wealth array).
 
 $$w^0_{\text{child}} = b\,w^{\text{final}}_{\text{parent}} + (1-b)\,w^{\text{base}}(z) + \varepsilon$$
 $$T_{\text{child}} = \rho\,T_{\text{parent}} + \sqrt{1-\rho^2}\,\xi,\qquad
-h^0 = h_{\text{floor}} + \delta\,\mathbf{1}[\text{parent above line}]$$
+h^0 = h_{\text{floor}} + \delta\,\mathbf{1}[\text{parent above line}] + 0.15\,T_{\text{child}}$$
 
 with a mobility flip at rate `move_probability`. The IGE is estimated as the OLS
 slope of $\log w_{\text{child}}$ on $\log w_{\text{parent}}$ over resolved lives
@@ -126,9 +129,12 @@ stays consistent; with `theta=0` it reduces to the static line.
 ## 10. Continuum bands and first-passage (spec 7.10)
 
 `core/bands.py::classify` maps wealth to the five ordered bands via
-`searchsorted` on the cutoffs. `FirstPassageMonitor` records the two distinct
-events - $\Pr(\text{cross }w_p)$ ("left poverty") and $\Pr(\text{reach }w^*)$
-("became rich") - separately by birth class. **[exact]**
+`searchsorted` on the cutoffs. `FirstPassageMonitor` records, separately by birth
+class: $\Pr(\text{cross }w_p)$ ("left poverty", a first-passage event that may be
+transient), $\Pr(\text{reach }w^*)$ ("became rich"), and `time_above_line` - the
+average share of a life spent at or above the poverty line, a **durability**
+measure that sits between the two and distinguishes a transient crossing (near 0)
+from durably living out of poverty (near 1). **[exact]**
 
 ## 11. Inequality metric
 
@@ -149,8 +155,8 @@ Every stochastic draw flows through the single `numpy.random.Generator` in
 | Opportunity arrival = one event/step | [approx] | exact $\Pr(N\ge1)$; multi-arrival negligible at small `dt` |
 | Generational base-blend term | refinement | prevents lineages collapsing to 0; conservative |
 | Peer interaction | [exact] | `PeerInfluence`: drift toward neighbours' mean wealth |
-| Pooling (7.6) | [exact] | `population/pooling.py::CollectivePooling` |
+| Pooling (7.6) | [exact] | `population/pooling.py::CollectivePooling`; targets the poverty line |
 | Relative poverty line (7.9) | [exact] | `bands.effective_poverty_line`, `relative_line_theta>0` |
-| Wealth-dependent returns | [exact] | `r(w)=r+slope*w/w*` (Fagereng), default on |
+| Wealth-dependent returns | [exact] | `r(w)=r+slope*w/w*`; slope=0 in the calibrated baseline (off by default) |
 
 Everything else is a literal, verifiable implementation of the equations.

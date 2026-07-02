@@ -36,11 +36,11 @@ All interfaces are tiny `Protocol`s in `core/protocols.py`:
 
 | Protocol | Responsibility | Example components |
 |----------|----------------|--------------------|
-| `DriftTerm` | add a term to expected drift `mu` | `NeighborhoodDrift`, `PovertyPremium`, `ValueCreation`, `CapitalReturns`, `NetworkDrift` |
+| `DriftTerm` | add a term to expected drift `mu` | `NeighborhoodDrift`, `PovertyPremium`, `ValueCreation`, `CapitalReturns`, `NetworkDrift`, `PeerInfluence` |
 | `NoiseTerm` | add a stochastic increment | `DiffusionShocks` |
 | `EventProcess` | apply discrete jumps | `OpportunityProcess` |
-| `PopulationProcess` | births/deaths/network/barriers | `SkillGrowth`, `SocialNetwork`, `RegimePolicy`, `FirstPassageMonitor` |
-| `Observer` | record metrics (read-only) | `PopulationMetrics` |
+| `PopulationProcess` | births/deaths/network/barriers | `SkillGrowth`, `SocialNetwork`, `CollectivePooling`, `RegimePolicy`, `FirstPassageMonitor` |
+| `Observer` | record metrics (read-only) | `PopulationMetrics`, `SnapshotEmitter` |
 | `BirthPolicy` | (re)spawn a resolved life | `SimpleRestart`, `GenerationalTransmission` |
 
 ## How SOLID shows up
@@ -108,11 +108,12 @@ No engine change required. That is the whole point.
 
 ## Visualization
 
-The engine is headless and numeric by design (separation of concerns). A
-visualization layer (e.g. a Pygame or web renderer) is an **adapter** that reads
-`AgentState` each tick and draws it; it attaches as an `Observer` so it cannot
-affect the dynamics. The per-concept visual plan is in
-[`../README.md`](../README.md) section 8.
+The engine is headless and numeric by design (separation of concerns). The
+visualization layer is an **adapter** that reads `AgentState` each tick and draws
+it; it attaches as an `Observer` (`observe/stream.py::SnapshotEmitter`) so it
+cannot affect the dynamics. This is implemented in `src/ux/`: a FastAPI WebSocket
+backend streams frames to a React/Tailwind dashboard. The per-concept visual plan
+is in [`../README.md`](../README.md) section 8.
 
 ## Testing
 

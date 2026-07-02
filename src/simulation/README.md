@@ -158,7 +158,9 @@ graph LR
 - Opportunities arrive (more if rich/connected), pay off Pareto, captured only
   with skill + slack.
 - A life resolves at ruin or the rich threshold; a child inherits wealth/talent/
-  place. Two distinct outcomes are tracked: left poverty vs became rich.
+  place. Three outcomes are tracked per life: left poverty (ever crossed the line),
+  time-above-line (share of life spent out of poverty, a durability measure), and
+  became rich (reached w*).
 
 Each rule cites a paper in [`../../docs/literature/calibration.md`](../../docs/literature/calibration.md).
 

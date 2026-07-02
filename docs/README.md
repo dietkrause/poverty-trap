@@ -369,8 +369,9 @@ $$c_i = \frac{1}{\lvert \mathcal{N}(i) \rvert}\sum_{j\in \mathcal{N}(i)} \mathbf
 
 A higher $c_i$ raises both your opportunity rate $\lambda_i$ and your efficiency $\eta_i$ (a
 friend helps you absorb a shock before it ruins you). Connections also let people pool: a
-group $C$ can combine resources to cross the threshold once when
-$\sum_{j\in C} w_j \ge w^{*}$, modeling collective escape.
+group $C$ of below-line agents can combine resources to push one member across the
+**poverty line** when $\sum_{j\in C} w_j \ge w_p$, modeling collective escape from poverty
+(a savings-group / cooperative mechanism, conserving total wealth).
 
 ### 7.7 Talent (Normal) becomes outcome (power law)
 Talent is modelled as normally distributed, which is standard. The
